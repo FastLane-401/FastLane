@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1029380188507",
+    "firebase_url": "https://fastlane-401-default-rtdb.firebaseio.com",
+    "project_id": "fastlane-401",
+    "storage_bucket": "fastlane-401.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029380188507:android:3cf1d03d9e24f4e283127e",
+        "android_client_info": {
+          "package_name": "com.fastlane"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029380188507-3hq5hda1p1n25sumkpuakjskv76sc067.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhkpp8yUO3pdoP8cUrj9sZqJeq2lX7SaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029380188507-3hq5hda1p1n25sumkpuakjskv76sc067.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
