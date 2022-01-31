@@ -1,5 +1,5 @@
-import {initializeApp} from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
 
 const Firebase = initializeApp({
   apiKey: process.env.FIREBASE_API_KEY,
@@ -10,7 +10,7 @@ const Firebase = initializeApp({
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
   measurementId: process.env.FIREBASE_MEASUREMENT_ID
-});
+})
 
-export const auth = getAuth(Firebase);
-export default Firebase;
+export const auth = getAuth(Firebase)
+export default Firebase

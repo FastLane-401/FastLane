@@ -1,41 +1,53 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ESLintPlugin = require('eslint-webpack-plugin');
-const dotenv = require('dotenv');
-const { DefinePlugin } = require('webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ESLintPlugin = require('eslint-webpack-plugin')
+const dotenv = require('dotenv')
+const { DefinePlugin } = require('webpack')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = {
   mode: 'production',
-  entry: './client/app/index.jsx',
+  entry: './index.web.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build'),
     filename: '[name].[contenthash].js',
     publicPath: ''
   },
   module: {
     rules: [
       {
-        test: /\.(js)x?$/i,
+        test: /\.(js|ts)x?$/i,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [
-              '@babel/preset-env',
-              '@babel/preset-react'
+            cacheDirectory: true,
+            presets: ['module:metro-react-native-babel-preset'],
+            plugins: [
+              'react-native-web',
+              [
+                'module-resolver',
+                {
+                  alias: {
+                    '^react-native$': 'react-native-web'
+                  }
+                }
+              ]
             ]
           }
         }
       },
       {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader', 'postcss-loader']
+        test: /\.(png|svg|jpg|git)$/,
+        use: ['file-loader']
       }
     ]
   },
   resolve: {
-    extensions: ['.jsx', '.js']
+    alias: {
+      'react-native$': 'react-native-web'
+    },
+    extensions: ['.web.js', '.jsx', '.js']
   },
   optimization: {
     minimize: true,
@@ -55,4 +67,4 @@ module.exports = {
     }),
     new CleanWebpackPlugin()
   ]
-};
+}

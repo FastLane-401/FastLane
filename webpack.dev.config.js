@@ -7,9 +7,9 @@ const dotenv = require('dotenv')
 module.exports = {
   mode: 'development',
   output: {
-    publicPath: '/',
+    publicPath: '/'
   },
-  entry: './client/app/index.jsx',
+  entry: './index.web.js',
   module: {
     rules: [
       {
@@ -18,39 +18,54 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [
-              '@babel/preset-env',
-              '@babel/preset-react',
-            ],
-          },
-        },
+            cacheDirectory: true,
+            presets: ['module:metro-react-native-babel-preset'],
+            plugins: [
+              'react-native-web',
+              [
+                'module-resolver',
+                {
+                  alias: {
+                    '^react-native$': 'react-native-web'
+                  }
+                }
+              ]
+            ]
+          }
+        }
       },
       {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader', 'postcss-loader'],
-      },
-    ],
+        test: /\.(png|svg|jpg|gif)$/,
+        use: ['file-loader']
+      }
+    ]
   },
+
   resolve: {
-    extensions: ['.jsx', '.js'],
+    alias: {
+      'react-native$': 'react-native-web'
+    },
+    extensions: ['.web.js', '.jsx', '.js']
   },
+
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'public/index.html',
+      template: 'public/index.html'
     }),
     new HotModuleReplacementPlugin(),
     new ESLintPlugin({
-      extensions: ['js', 'jsx'],
+      extensions: ['js', 'jsx']
     }),
     new DefinePlugin({
-      'process.env': JSON.stringify(dotenv.config().parsed),
-    }),
+      'process.env': JSON.stringify(dotenv.config().parsed)
+    })
   ],
+
   devtool: 'inline-source-map',
   devServer: {
     static: path.join(__dirname, 'dist'),
     historyApiFallback: true,
     port: 4000,
-    open: true,
-  },
+    open: true
+  }
 }
