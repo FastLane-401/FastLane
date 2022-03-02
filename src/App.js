@@ -102,7 +102,7 @@ class VoiceTest extends Component<Props, State> {
      * together between button presses. */
     RNFS.writeFile(path, e.value[0], 'utf8')
       .then((success) => {
-        console.log('FILE WRITTEN');
+        console.log('FILE WRITTEN: ' + path);
       })
       .catch((err) => {
         console.log(err.message);
@@ -182,7 +182,7 @@ class VoiceTest extends Component<Props, State> {
 
       RNFS.readFile(path, 'utf8')
         .then((data) => {
-          console.log('FILE READ');
+          console.log('FILE READ: ' + path);
           this.setState({
             read: data,
           });
