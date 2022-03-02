@@ -54,7 +54,7 @@ const App = () => {
             Edit <Text style={styles.highlight}>App.js</Text> to change this
             screen and then come back to see your edits.
           </Section>
-          <Section title="Test">Testing the live reloading</Section>
+          <Section title="Test">Testing the live reloading by editing this code. This was typed by Noah.</Section>
         </View>
       </ScrollView>
     </SafeAreaView>
