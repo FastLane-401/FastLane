@@ -146,18 +146,6 @@ export default HelloWorldApp
 
 */
 
-/*
-updateModeText() {
-    if(this.state.value = "Command")
-        return "Mindful";
-    else if(this.state.value = "Mindful")
-        return "Edit";
-
-    return "Command";
-}
-
-*/
-
 const FastLaneApp = () =>
 {
     //Set up functions for buttons
