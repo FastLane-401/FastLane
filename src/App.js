@@ -144,6 +144,7 @@ export default HelloWorldApp
             <Text style={styles.textAlabaster} >
                 Mode button clicked {countMode} times</Text>
 
+
 */
 
 const FastLaneApp = () =>
