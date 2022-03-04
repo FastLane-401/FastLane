@@ -3,300 +3,287 @@
  * @flow strict-local
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
-  View,
-  Button,
   TouchableOpacity,
-  TouchableHighlight,
-} from 'react-native';
-
-
-
-
-/* Set up color palette for dark-mode and light-mode */
-    //Color pallet for sections
-/*
-
-const Section = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[styles.sectionTitle, {color: isDarkMode ? '#eee' : '#333'}]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {color: isDarkMode ? '#eee' : '#333'},
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+  View,
+  PermissionsAndroid
+} from 'react-native'
+import Voice from '@react-native-voice/voice'
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [isListening, setIsListening] = useState(false)
+  const [results, setResults] = useState([])
+  const [partialResults, setPartialResults] = useState([])
+  const [error, setError] = useState()
+  const [read, setRead] = useState()
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? '#000' : '#fff',
-  };
+  const [countDoc, setCountDoc] = useState(0)
+  const [countMode, setCountMode] = useState(0)
+  const [labelMode, setLabelMode] = useState('Command')
+  const modeTextHandler = event => setLabelMode('Mindful')
+
+  const requestRecordPermission = async () => {
+    await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+    )
+  }
+
+  const onStart = () => {
+    console.log('Starting Listening')
+    setIsListening(true)
+  }
+
+  const onEnd = (e) => {
+    console.log('Ending Listening')
+    setIsListening(false)
+  }
+
+  const onError = (error) => {
+    console.log('Error: ', error)
+    setError(error.message)
+    setIsListening(false)
+  }
+
+  const onResults = (results) => {
+    console.log('Results: ', results)
+    setResults(results.value)
+    const RNFS = require('react-native-fs')
+    const path = RNFS.DocumentDirectoryPath + '/voicelog.txt'
+
+    /* if you want text to persist in the file between button presses, use
+     * appendFile() instead of writeFile(). You should also probably modify
+     * the second parameter to ' ' + e.value[0] so text strings don't run
+     * together between button presses. */
+    RNFS.writeFile(path, results.value[0], 'utf8')
+      .then((success) => {
+        console.log('FILE WRITTEN: ' + path)
+      })
+      .catch((err) => {
+        console.log('PROBLEM HERE')
+        console.log(err.message)
+      })
+    stopRecognizing()
+  }
+
+  const onPartialResults = (partialResults) => {
+    console.log('Partial Results: ', partialResults)
+    setPartialResults(partialResults.value[0])
+  }
+
+  useEffect(() => {
+    Voice.onSpeechStart = onStart
+    Voice.onSpeechEnd = onEnd
+    Voice.onSpeechError = onError
+    Voice.onSpeechResults = onResults
+    Voice.onSpeechPartialResults = onPartialResults
+
+    return () => {
+      Voice.destroy().then(Voice.removeAllListeners)
+    }
+  }, [])
+
+  const startRecognizing = async () => {
+    console.log('test')
+    try {
+      await Voice.start('en-US')
+      setError('')
+      setResults([])
+      setPartialResults([])
+      setIsListening(false)
+      setRead('')
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const stopRecognizing = async () => {
+    try {
+      await Voice.stop()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const _cancelRecognizing = async () => {
+    try {
+      await Voice.cancel()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const _destroyRecognizer = async () => {
+    try {
+      await Voice.destroy()
+      setError('')
+      setResults([])
+      setPartialResults([])
+      setIsListening(false)
+      setRead('')
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const _readVoiceLog = async () => {
+    try {
+      const RNFS = require('react-native-fs')
+      const path = RNFS.DocumentDirectoryPath + '/voicelog.txt'
+
+      RNFS.readFile(path, 'utf8')
+        .then((data) => {
+          console.log('FILE READ: ' + path)
+          setRead(data)
+        })
+        .catch((error) => {
+          console.log(error.message)
+        })
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  useEffect(() => {
+    requestRecordPermission()
+  }, [])
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? '#000' : '#fff',
-          }}>
-          <Section title="Step 1">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+    <View
+      style={styles.screen}>
 
+      <Text
+        style={styles.docDisplay} >
+        <Text style={styles.boldText}>         Document{'\n\n'}</Text>
+        {results[0]}
+      </Text>
 
+      <Text
+        style={styles.modeDisplay} >
+        <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
+        {labelMode}
+      </Text>
 
+      <TouchableOpacity
+        onPress={startRecognizing}
+        style={styles.micButton} >
+        <Text
+          style={styles.textWhite} >
+          MIC
+        </Text>
+      </TouchableOpacity>
 
+      <TouchableOpacity
+        onPress={() => setCountDoc(countDoc + 1)}
+        style={styles.docButton} >
+        <Text
+          style={styles.textAlabaster} >
+          DOC
+        </Text>
+      </TouchableOpacity>
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+      <TouchableOpacity
+        onPress={() => setCountMode(countMode + 1)}
+        onPress={modeTextHandler}
+        style={styles.modeButton} >
+        <Text
+          style={styles.textAlabaster} >
+          MODE
+        </Text>
+      </TouchableOpacity>
 
-export default App;
+    </View>
 
-*/
+  )
+}
 
-
-/*
-const HelloWorldApp = () =>
-{
-    const [count, setCount] = useState(0);
-
-    return (
-        <View
-            style = {styles.screen}
-        >
-
-            <Text>Hello, world!</Text>
-            <Text>You clicked {count} times</Text>
-            <Button
-                onPress={() => setCount(count + 1)}
-                title="I am a Button"
-            />
-
-            <TouchableOpacity
-                onPress={() => setCount(count - 1)}
-                style={styles.largeButton}
-            >
-                <Text
-                    style={styles.textWhite}
-                >
-                    TO button?
-                </Text>
-            </TouchableOpacity>
-        </View>
-
-
-    );
-};
-
-export default HelloWorldApp
-
-
-            <Text style={styles.textAlabaster} >
-                Mic button clicked {countMic} times</Text>
-            <Text style={styles.textAlabaster} >
-                Doc button clicked {countDoc} times</Text>
-            <Text style={styles.textAlabaster} >
-                Mode button clicked {countMode} times</Text>
-
-
-*/
-
-const FastLaneApp = () =>
-{
-    //Set up functions for buttons
-    const [countMic, setCountMic] = useState(0);
-    const [countDoc, setCountDoc] = useState(0);
-    const [countMode, setCountMode] = useState(0);
-
-    const [labelMode, setLabelMode] = useState("Command");
-
-    const modeTextHandler = event => setLabelMode("Mindful");
-
-
-    return (
-        <View
-            style = {styles.screen}>
-
-
-            <Text
-            style={styles.docDisplay} >
-                <Text style={styles.boldText}>         Document{'\n\n'}</Text>
-                Long document name...
-            </Text>
-
-            <Text
-            style={styles.modeDisplay} >
-                <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
-                {labelMode}
-            </Text>
-
-
-            <TouchableOpacity
-                onPress={() => setCountMic(countMic + 1)}
-                style={styles.micButton} >
-                <Text
-                    style={styles.textWhite} >
-                    MIC
-                </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() => setCountDoc(countDoc + 1)}
-                style={styles.docButton} >
-                <Text
-                    style={styles.textAlabaster} >
-                    DOC
-                </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() => setCountMode(countMode + 1)}
-                onPress={modeTextHandler}
-                style={styles.modeButton} >
-                <Text
-                    style={styles.textAlabaster} >
-                    MODE
-                </Text>
-            </TouchableOpacity>
-
-
-        </View>
-
-
-    );
-};
-
-export default FastLaneApp
+export default App
 
 const styles = StyleSheet.create({
 
-    screen: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#2F2F2F',
-      },
+  screen: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2F2F2F'
+  },
 
-    micButton: {
-        top: 150,
-        left: 0,
-        width: 100,
-        height: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-        borderRadius: 100,
-        backgroundColor: '#f39900',
-    },
+  micButton: {
+    top: 150,
+    left: 0,
+    width: 100,
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#f39900'
+  },
 
-    docButton: {
-        top: 75,
-        left: -125,
-        width: 60,
-        height: 60,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-        borderRadius: 100,
-        backgroundColor: '#ad6f05',
-    },
+  docButton: {
+    top: 75,
+    left: -125,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#ad6f05'
+  },
 
-    modeButton: {
-        top: 15,
-        left: 125,
-        width: 60,
-        height: 60,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-        borderRadius: 100,
-        backgroundColor: '#ad6f05',
-    },
+  modeButton: {
+    top: 15,
+    left: 125,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#ad6f05'
+  },
 
-    docDisplay: {
-        top: 25,
-        left: 0,
-        width: 300,
-        height:175,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-        borderRadius: 25,
-        backgroundColor: '#171717',
-        color: "#FFFCF7",
-        fontSize: 30,
-    },
+  docDisplay: {
+    top: 25,
+    left: 0,
+    width: 300,
+    height: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 25,
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    fontSize: 30
+  },
 
-    modeDisplay: {
-        top: 75,
-        left: 0,
-        width: 300,
-        height:175,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-        borderRadius: 25,
-        backgroundColor: '#171717',
-        color: "#FFFCF7",
-        fontSize: 30,
-    },
+  modeDisplay: {
+    top: 75,
+    left: 0,
+    width: 300,
+    height: 175,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 25,
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    fontSize: 30
+  },
 
+  textWhite: {
+    color: '#FFFCF7'
+  },
 
-    textWhite: {
-        color: "#FFFCF7"
-    },
+  textAlabaster: {
+    color: '#E0E2DB'
+  },
 
-    textAlabaster: {
-        color: "#E0E2DB"
-    },
-
-    boldText: {
-        fontWeight: "bold"
-    }
+  boldText: {
+    fontWeight: 'bold'
+  }
 
 })
-
->>>>>>> frontend_kat
