@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -15,7 +15,16 @@ import {
   Text,
   useColorScheme,
   View,
+  Button,
+  TouchableOpacity,
+  TouchableHighlight,
 } from 'react-native';
+
+
+
+/* Set up color palette for dark-mode and light-mode */
+    //Color pallet for sections
+/*
 
 const Section = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -63,6 +72,10 @@ const App = () => {
   );
 };
 
+
+
+
+
 const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: 32,
@@ -83,3 +96,154 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+*/
+
+
+/*
+const HelloWorldApp = () =>
+{
+    const [count, setCount] = useState(0);
+
+    return (
+        <View
+            style = {styles.screen}
+        >
+
+            <Text>Hello, world!</Text>
+            <Text>You clicked {count} times</Text>
+            <Button
+                onPress={() => setCount(count + 1)}
+                title="I am a Button"
+            />
+
+            <TouchableOpacity
+                onPress={() => setCount(count - 1)}
+                style={styles.largeButton}
+            >
+                <Text
+                    style={styles.textWhite}
+                >
+                    TO button?
+                </Text>
+            </TouchableOpacity>
+        </View>
+
+
+    );
+};
+
+export default HelloWorldApp
+
+*/
+
+const FastLaneApp = () =>
+{
+    //Set up functions for buttons
+    const [countMic, setCountMic] = useState(0);
+    const [countDoc, setCountDoc] = useState(0);
+    const [countMode, setCountMode] = useState(0);
+
+    return (
+        <View
+            style = {styles.screen}>
+
+
+            <Text style={styles.textAlabaster} >
+                Mic button clicked {countMic} times</Text>
+            <Text style={styles.textAlabaster} >
+                Doc button clicked {countDoc} times</Text>
+            <Text style={styles.textAlabaster} >
+                Mode button clicked {countMode} times</Text>
+
+            <TouchableOpacity
+                onPress={() => setCountMic(countMic + 1)}
+                style={styles.micButton} >
+                <Text
+                    style={styles.textWhite} >
+                    MIC
+                </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                onPress={() => setCountDoc(countDoc + 1)}
+                style={styles.docButton} >
+                <Text
+                    style={styles.textAlabaster} >
+                    DOC
+                </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                onPress={() => setCountMode(countMode + 1)}
+                style={styles.modeButton} >
+                <Text
+                    style={styles.textAlabaster} >
+                    MODE
+                </Text>
+            </TouchableOpacity>
+
+
+        </View>
+
+
+    );
+};
+
+export default FastLaneApp
+
+const styles = StyleSheet.create({
+
+    screen: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2F2F2F',
+      },
+
+    micButton: {
+        top: 300,
+        left: 0,
+        width: 100,
+        height: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 100,
+        backgroundColor: '#f39900',
+    },
+
+    docButton: {
+        top: 225,
+        left: -125,
+        width: 60,
+        height: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 100,
+        backgroundColor: '#ad6f05',
+    },
+
+    modeButton: {
+        top: 165,
+        left: 125,
+        width: 60,
+        height: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 100,
+        backgroundColor: '#ad6f05',
+    },
+
+    textWhite: {
+        color: "#FFFCF7"
+    },
+
+    textAlabaster: {
+        color: "#E0E2DB"
+    }
+
+})
+
