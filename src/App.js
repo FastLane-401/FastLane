@@ -22,6 +22,7 @@ import {
 
 
 
+
 /* Set up color palette for dark-mode and light-mode */
     //Color pallet for sections
 /*
@@ -135,6 +136,26 @@ const HelloWorldApp = () =>
 
 export default HelloWorldApp
 
+
+            <Text style={styles.textAlabaster} >
+                Mic button clicked {countMic} times</Text>
+            <Text style={styles.textAlabaster} >
+                Doc button clicked {countDoc} times</Text>
+            <Text style={styles.textAlabaster} >
+                Mode button clicked {countMode} times</Text>
+
+*/
+
+/*
+updateModeText() {
+    if(this.state.value = "Command")
+        return "Mindful";
+    else if(this.state.value = "Mindful")
+        return "Edit";
+
+    return "Command";
+}
+
 */
 
 const FastLaneApp = () =>
@@ -144,17 +165,28 @@ const FastLaneApp = () =>
     const [countDoc, setCountDoc] = useState(0);
     const [countMode, setCountMode] = useState(0);
 
+    const [labelMode, setLabelMode] = useState("Command");
+
+    const modeTextHandler = event => setLabelMode("Mindful");
+
+
     return (
         <View
             style = {styles.screen}>
 
 
-            <Text style={styles.textAlabaster} >
-                Mic button clicked {countMic} times</Text>
-            <Text style={styles.textAlabaster} >
-                Doc button clicked {countDoc} times</Text>
-            <Text style={styles.textAlabaster} >
-                Mode button clicked {countMode} times</Text>
+            <Text
+            style={styles.docDisplay} >
+                <Text style={styles.boldText}>         Document{'\n\n'}</Text>
+                Long document name...
+            </Text>
+
+            <Text
+            style={styles.modeDisplay} >
+                <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
+                {labelMode}
+            </Text>
+
 
             <TouchableOpacity
                 onPress={() => setCountMic(countMic + 1)}
@@ -176,6 +208,7 @@ const FastLaneApp = () =>
 
             <TouchableOpacity
                 onPress={() => setCountMode(countMode + 1)}
+                onPress={modeTextHandler}
                 style={styles.modeButton} >
                 <Text
                     style={styles.textAlabaster} >
@@ -202,7 +235,7 @@ const styles = StyleSheet.create({
       },
 
     micButton: {
-        top: 300,
+        top: 150,
         left: 0,
         width: 100,
         height: 100,
@@ -214,7 +247,7 @@ const styles = StyleSheet.create({
     },
 
     docButton: {
-        top: 225,
+        top: 75,
         left: -125,
         width: 60,
         height: 60,
@@ -226,7 +259,7 @@ const styles = StyleSheet.create({
     },
 
     modeButton: {
-        top: 165,
+        top: 15,
         left: 125,
         width: 60,
         height: 60,
@@ -237,12 +270,45 @@ const styles = StyleSheet.create({
         backgroundColor: '#ad6f05',
     },
 
+    docDisplay: {
+        top: 25,
+        left: 0,
+        width: 300,
+        height:175,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 25,
+        backgroundColor: '#171717',
+        color: "#FFFCF7",
+        fontSize: 30,
+    },
+
+    modeDisplay: {
+        top: 75,
+        left: 0,
+        width: 300,
+        height:175,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 25,
+        backgroundColor: '#171717',
+        color: "#FFFCF7",
+        fontSize: 30,
+    },
+
+
     textWhite: {
         color: "#FFFCF7"
     },
 
     textAlabaster: {
         color: "#E0E2DB"
+    },
+
+    boldText: {
+        fontWeight: "bold"
     }
 
 })
