@@ -128,6 +128,12 @@ const App = () => {
 
     }
 
+    else if(results.value[0].startsWith("playback session"))
+        ttsFilePlayback(results.value[0].slice(17))
+    else if(results.value[0].startsWith("play back session"))
+        ttsFilePlayback(results.value[0].slice(18))
+    else if(results.value[0] == ("playback") || results.value[0] == ("play back"))
+        ttsPlayback()
     else
     {
         /* if you want text to persist in the file between button presses, use
@@ -238,16 +244,35 @@ const App = () => {
     }
   }
 
-  //Event for TTS playback from current document
+  //Event for TTS playback from current session
   const ttsPlayback = async() =>
   {
-
+    RNFS.readFile(path, 'utf8').then((data) =>
+    {
+        console.log('SESSION PLAYBACK: ' + path)
+        Tts.speak(data)
+    })
+    .catch((error) =>
+    {
+        console.log(error.message)
+        Tts.speak("Unexpected error on playback of current session.")
+    })
   }
 
   //Event for TTS playback from voice session file
-  const ttsFilePlayback = async() =>
+  const ttsFilePlayback = async(fileName) =>
   {
-
+    filePath = RNFS.DocumentDirectoryPath + '/' + fileName.split(' ').join('_') + '.md'
+    RNFS.readFile(filePath, 'utf8').then((data) =>
+    {
+        console.log('FILE PLAYBACK: ' + filePath)
+        Tts.speak(data)
+    })
+    .catch((error) =>
+    {
+        console.log(error.message)
+        Tts.speak("Unable to find session file.")
+    })
   }
 
   useEffect(() => {
