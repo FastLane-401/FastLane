@@ -13,6 +13,7 @@ import {
 } from 'react-native'
 import Voice from '@react-native-voice/voice'
 
+
 //Global variables
 var inputs = new Array()
 var session_title = "# Mindful Mode Session\n"
@@ -32,6 +33,8 @@ const App = () => {
   const [countDoc, setCountDoc] = useState(0)
   const [countMode, setCountMode] = useState(0)
   const [labelMode, setLabelMode] = useState('Command')
+  const [modeDisplay, setModeDisplay] = useState(mode)
+  const modeDisplayHandler = event => setModeDisplay(mode)
   const modeTextHandler = event => setLabelMode('Mindful')
 
   const requestRecordPermission = async () => {
@@ -240,31 +243,58 @@ const App = () => {
     requestRecordPermission()
   }, [])
 
+  const renderMode = () => {
+    if(mode == "mindful")
+    {
+        mode = "command"
+    }
+    else if(mode == "command")
+    {
+        mode = "editing"
+    }
+    else if(mode == "editing")
+    {
+        mode = "mindful"
+    }
+    else
+    {
+        mode = "error"
+    }
+  }
+
   return (
     <View
       style={styles.screen}>
 
+      {/* Document name Display */}
       <Text
         style={styles.docDisplay} >
         <Text style={styles.boldText}>         Document{'\n\n'}</Text>
         {results[0]}
       </Text>
 
+      {/* Mode Display */}
       <Text
         style={styles.modeDisplay} >
         <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
         {labelMode}
+        {mode}
+        {'\n'}
+        {modeDisplay}
       </Text>
 
+      {/* Mic Button */}
       <TouchableOpacity
         onPress={startRecognizing}
         style={styles.micButton} >
         <Text
           style={styles.textWhite} >
           MIC
+
         </Text>
       </TouchableOpacity>
 
+      {/* Document Button */}
       <TouchableOpacity
         onPress={() => setCountDoc(countDoc + 1)}
         style={styles.docButton} >
@@ -274,9 +304,13 @@ const App = () => {
         </Text>
       </TouchableOpacity>
 
+
+      {/* Mode Button */}
       <TouchableOpacity
-        onPress={() => setCountMode(countMode + 1)}
         onPress={modeTextHandler}
+        onPress={renderMode()}
+        onPress={modeDisplayHandler}
+
         style={styles.modeButton} >
         <Text
           style={styles.textAlabaster} >
@@ -377,3 +411,27 @@ const styles = StyleSheet.create({
   }
 
 })
+
+/*
+      <Text
+        style={styles.modeDisplay} >
+        <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
+        {labelMode}
+        {mode}
+        {'\n'}
+        {modeDisplay}
+      </Text>
+
+      <TouchableOpacity
+        onPress={modeTextHandler}
+        onPress={renderMode()}
+        onPress={modeDisplayHandler}
+
+        style={styles.modeButton} >
+        <Text
+          style={styles.textAlabaster} >
+          MODE
+        </Text>
+      </TouchableOpacity>
+
+*/
