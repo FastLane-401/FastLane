@@ -12,6 +12,7 @@ import {
   PermissionsAndroid
 } from 'react-native'
 import Voice from '@react-native-voice/voice'
+import Tts from 'react-native-tts'
 
 //Global variables
 var inputs = new Array()
@@ -126,6 +127,7 @@ const App = () => {
         }
 
     }
+
     else
     {
         /* if you want text to persist in the file between button presses, use
@@ -234,6 +236,18 @@ const App = () => {
     } catch (e) {
       console.error(e)
     }
+  }
+
+  //Event for TTS playback from current document
+  const ttsPlayback = async() =>
+  {
+
+  }
+
+  //Event for TTS playback from voice session file
+  const ttsFilePlayback = async() =>
+  {
+
   }
 
   useEffect(() => {
