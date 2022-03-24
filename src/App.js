@@ -269,6 +269,11 @@ const App = () => {
     <View
       style={styles.screen}>
 
+      {/* Setting and Account Information Bar*/}
+      <View
+        style={styles.infoDisplay} >
+      </View>
+
       {/* Document name Display */}
       <View
         style={styles.docDisplay} >
@@ -339,8 +344,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#2F2F2F'
   },
 
+  infoDisplay: {
+    top: -30,
+    left: 0,
+    width: 500,
+    height: 60,
+    //justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 25,
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    fontSize: 30
+  },
+
   micButton: {
-    top: 150,
+    top: 120,
     left: 0,
     width: 100,
     height: 100,
@@ -362,7 +381,7 @@ const styles = StyleSheet.create({
     },
 
   docButton: {
-    top: 75,
+    top: 45,
     left: -125,
     width: 60,
     height: 60,
@@ -384,7 +403,7 @@ const styles = StyleSheet.create({
   },
 
   modeButton: {
-    top: 15,
+    top: -15,
     left: 125,
     width: 60,
     height: 60,
@@ -407,7 +426,7 @@ const styles = StyleSheet.create({
 
 
   docDisplay: {
-    top: 25,
+    top: 15,
     left: 0,
     width: 300,
     height: 250,
@@ -450,7 +469,7 @@ const styles = StyleSheet.create({
   },
 
   modeDisplay: {
-    top: 75,
+    top: 65,
     left: 0,
     width: 300,
     height: 175,
