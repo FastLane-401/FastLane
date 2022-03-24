@@ -1,8 +1,9 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
-import { auth } from '@react-native-firebase/app'
+import auth from '@react-native-firebase/auth'
 import React, {
   createContext,
-  useState
+  useState,
+  useEffect
 } from 'react'
 import { processColor } from 'react-native'
 
@@ -14,6 +15,10 @@ GoogleSignin.configure({
 const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false)
   const [user, setUser] = useState()
+
+  useEffect(() => {
+    auth().onAuthStateChanged(setUser)
+  }, [])
 
   const authenticated = !!user
 

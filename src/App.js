@@ -4,13 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  PermissionsAndroid
-} from 'react-native'
+import { PermissionsAndroid } from 'react-native'
 import Voice from '@react-native-voice/voice'
 import Tts from 'react-native-tts'
 import { AuthProvider } from './contexts/AuthContext'
@@ -285,90 +279,3 @@ const App = () => {
 }
 
 export default App
-
-const styles = StyleSheet.create({
-
-  screen: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#2F2F2F'
-  },
-
-  micButton: {
-    top: 150,
-    left: 0,
-    width: 100,
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 100,
-    backgroundColor: '#f39900'
-  },
-
-  docButton: {
-    top: 75,
-    left: -125,
-    width: 60,
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 100,
-    backgroundColor: '#ad6f05'
-  },
-
-  modeButton: {
-    top: 15,
-    left: 125,
-    width: 60,
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 100,
-    backgroundColor: '#ad6f05'
-  },
-
-  docDisplay: {
-    top: 25,
-    left: 0,
-    width: 300,
-    height: 250,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 25,
-    backgroundColor: '#171717',
-    color: '#FFFCF7',
-    fontSize: 30
-  },
-
-  modeDisplay: {
-    top: 75,
-    left: 0,
-    width: 300,
-    height: 175,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 25,
-    backgroundColor: '#171717',
-    color: '#FFFCF7',
-    fontSize: 30
-  },
-
-  textWhite: {
-    color: '#FFFCF7'
-  },
-
-  textAlabaster: {
-    color: '#E0E2DB'
-  },
-
-  boldText: {
-    fontWeight: 'bold'
-  }
-
-})
