@@ -50,7 +50,6 @@ const Home = (props) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-                onPress={() => setCountMode(countMode + 1)}
                 onPress={modeTextHandler}
                 style={styles.modeButton} >
                 <Text

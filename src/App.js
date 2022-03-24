@@ -13,14 +13,12 @@ import {
 } from 'react-native'
 import Voice from '@react-native-voice/voice'
 
-//Global variables
-var inputs = new Array()
-var session_title = "# Mindful Mode Session\n"
-var mode = "mindful"
+// Global variables
+const inputs = []
+let sessionTitle = '# Mindful Mode Session\n'
+const modes = ['command', 'mindful', 'editing']
 const RNFS = require('react-native-fs')
-var path = RNFS.DocumentDirectoryPath + '/new_session.md'
-
-
+let path = RNFS.DocumentDirectoryPath + '/new_session.md'
 
 const App = () => {
   const [isListening, setIsListening] = useState(false)
@@ -31,8 +29,15 @@ const App = () => {
 
   const [countDoc, setCountDoc] = useState(0)
   const [countMode, setCountMode] = useState(0)
-  const [labelMode, setLabelMode] = useState('Command')
-  const modeTextHandler = event => setLabelMode('Mindful')
+  const [labelMode, setLabelMode] = useState(modes[0])
+
+  const modeTextHandler = () => {
+    labelMode === modes[0]
+      ? setLabelMode(modes[1])
+      : labelMode === modes[1]
+        ? setLabelMode(modes[2])
+        : setLabelMode(modes[0])
+  }
 
   const requestRecordPermission = async () => {
     await PermissionsAndroid.request(
@@ -45,7 +50,7 @@ const App = () => {
     setIsListening(true)
   }
 
-  const onEnd = (e) => {
+  const onEnd = () => {
     console.log('Ending Listening')
     setIsListening(false)
   }
@@ -60,82 +65,62 @@ const App = () => {
     console.log('Results: ', results)
     setResults(results.value)
     const RNFS = require('react-native-fs')
-    //path = RNFS.DocumentDirectoryPath + '/voicelog.md'
+    // path = RNFS.DocumentDirectoryPath + '/voicelog.md'
 
-    if(results.value[0] == "clear session")
+    if (results.value[0] === 'clear session') {
+      RNFS.writeFile(path, sessionTitle, 'utf8')
+        .then((success) => {
+          console.log('Cleared session')
+        })
+        .catch((err) => {
+          console.log('PROBLEM HERE')
+          console.log(err.message)
+        })
+    } else if (results.value[0].startsWith('rename session')) {
+      console.log('Renaming Session File Name')
+      RNFS.moveFile(path, RNFS.DocumentDirectoryPath + '/' + results.value[0].slice(15) + '.md')
+      path = RNFS.DocumentDirectoryPath + '/' + results.value[0].slice(15) + '.md'
+    } else if (results.value[0].startsWith('rename title')) {
+      sessionTitle = '# ' + results.value[0].slice(13) + '\n'
+      console.log('Renaming Title')
 
-    {
-        RNFS.writeFile(path, session_title, 'utf8')
+      RNFS.writeFile(path, sessionTitle, 'utf8')
+        .then((success) => {
+          console.log('Cleared session')
+        })
+        .catch((err) => {
+          console.log('PROBLEM HERE')
+          console.log(err.message)
+        })
+      for (let i = 0; i < inputs.length; i++) {
+        RNFS.appendFile(path, '- ' + inputs[i] + '\n', 'utf8')
           .then((success) => {
-            console.log('Cleared session')
+            console.log('FILE WRITTEN: ' + path)
+            inputs.push(results.value[0])
           })
           .catch((err) => {
             console.log('PROBLEM HERE')
             console.log(err.message)
           })
-    }
-    else if(results.value[0].startsWith("rename session"))
-    {
-        console.log('Renaming Session File Name')
-        RNFS.moveFile(path, RNFS.DocumentDirectoryPath+'/'+results.value[0].slice(15)+".md")
-        path = RNFS.DocumentDirectoryPath+'/'+results.value[0].slice(15)+".md"
-    }
-    else if(results.value[0].startsWith("rename title"))
-    {
-        session_title = "# "+results.value[0].slice(13)+"\n"
-        console.log('Renaming Title')
-
-        RNFS.writeFile(path, session_title, 'utf8')
-          .then((success) => {
-            console.log('Cleared session')
-          })
-          .catch((err) => {
-            console.log('PROBLEM HERE')
-            console.log(err.message)
-          })
-        for(let i = 0; i < inputs.length; i++)
-        {
-          RNFS.appendFile(path, '- ' +inputs[i]+'\n', 'utf8')
-            .then((success) => {
-              console.log('FILE WRITTEN: ' + path)
-              inputs.push(results.value[0])
-            })
-            .catch((err) => {
-              console.log('PROBLEM HERE')
-              console.log(err.message)
-            })
-        }
-    }
-    else if(results.value[0].startsWith("select mode"))
-    {
-        if(results.value[0].slice(12) == "mindful")
-        {
-            console.log('Mindful Mode Selected')
-        }
-        else if(results.value[0].slice(12) == "command")
-        {
-            console.log('Command Mode Selected')
-        }
-        else if(results.value[0].slice(12) == "editing")
-        {
-            console.log('Assisted Editing Mode Selected')
-        }
-        else
-        {
-            console.log('Incorrect Mode Specified')
-        }
-
-    }
-    else
-    {
-        /* if you want text to persist in the file between button presses, use
+      }
+    } else if (results.value[0].startsWith('select mode')) {
+      if (results.value[0].slice(12) === 'mindful') {
+        console.log('Mindful Mode Selected')
+      } else if (results.value[0].slice(12) === 'command') {
+        console.log('Command Mode Selected')
+      } else if (results.value[0].slice(12) === 'editing') {
+        console.log('Assisted Editing Mode Selected')
+      } else {
+        console.log('Incorrect Mode Specified')
+      }
+    } else {
+      /* if you want text to persist in the file between button presses, use
          * appendFile() instead of writeFile(). You should also probably modify
          * the second parameter to ' ' + e.value[0] so text strings don't run
          * together between button presses. */
-        inputs.push(results.value[0])
-        if(inputs.length == 1)
-        {
-        RNFS.writeFile(path, session_title, 'utf8')
+      inputs.push(results.value[0])
+      if (inputs.length === 1) {
+        RNFS.writeFile(path, sessionTitle, 'utf8')
           .then((success) => {
             console.log('Cleared session')
           })
@@ -143,9 +128,9 @@ const App = () => {
             console.log('PROBLEM HERE')
             console.log(err.message)
           })
-        }
+      }
 
-        RNFS.appendFile(path, '- ' +results.value[0]+'\n', 'utf8')
+      RNFS.appendFile(path, '- ' + results.value[0] + '\n', 'utf8')
         .then((success) => {
           console.log('FILE WRITTEN: ' + path)
           inputs.push(results.value[0])
@@ -173,7 +158,7 @@ const App = () => {
     return () => {
       Voice.destroy().then(Voice.removeAllListeners)
     }
-  }, [])
+  })
 
   const startRecognizing = async () => {
     console.log('test')
@@ -221,7 +206,7 @@ const App = () => {
   const _readVoiceLog = async () => {
     try {
       const RNFS = require('react-native-fs')
-      //const path = RNFS.DocumentDirectoryPath + '/voicelog.txt'
+      // const path = RNFS.DocumentDirectoryPath + '/voicelog.txt'
 
       RNFS.readFile(path, 'utf8')
         .then((data) => {
@@ -275,7 +260,6 @@ const App = () => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => setCountMode(countMode + 1)}
         onPress={modeTextHandler}
         style={styles.modeButton} >
         <Text
