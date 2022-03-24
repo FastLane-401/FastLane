@@ -15,7 +15,7 @@ const Home = (props) => {
       <View
         style={styles.screen}>
 
-      {/* Setting and Account Information Bar*/}
+      {/* Setting and Account Information Bar */}
       <View
         style={styles.infoDisplay} >
         <Image
