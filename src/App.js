@@ -35,10 +35,10 @@ const App = () => {
 
   const [countDoc, setCountDoc] = useState(0)
   const [countMode, setCountMode] = useState(0)
-  const [labelMode, setLabelMode] = useState('Command')
+
   const [modeDisplay, setModeDisplay] = useState(mode)
   const modeDisplayHandler = event => setModeDisplay(mode)
-  const modeTextHandler = event => setLabelMode('Mindful')
+
 
   const requestRecordPermission = async () => {
     await PermissionsAndroid.request(
@@ -270,21 +270,22 @@ const App = () => {
       style={styles.screen}>
 
       {/* Document name Display */}
-      <Text
+      <View
         style={styles.docDisplay} >
-        <Text style={styles.boldText}>         Document{'\n\n'}</Text>
-        {results[0]}
-      </Text>
+        <Text style={styles.docTitle}>Document{'\n'}</Text>
+        <View style={styles.docLine}></View>
+        <Text
+        style={styles.docText}
+        numberOfLines={4}>{results[0]}</Text>
+      </View>
 
       {/* Mode Display */}
-      <Text
+      <View
         style={styles.modeDisplay} >
-        <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
-        {labelMode}
-        {mode}
-        {'\n'}
-        {modeDisplay}
-      </Text>
+        <Text style={styles.modeTitle}>Mode{'\n'}</Text>
+        <View style={styles.modeLine}></View>
+        <Text style={styles.modeText}>{mode}</Text>
+      </View>
 
       {/* Mic Button */}
       <TouchableOpacity
@@ -311,7 +312,6 @@ const App = () => {
 
       {/* Mode Button */}
       <TouchableOpacity
-        onPress={modeTextHandler}
         onPress={renderMode()}
         onPress={modeDisplayHandler}
 
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     left: 0,
     width: 300,
     height: 250,
-    justifyContent: 'center',
+    //justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
     borderRadius: 25,
@@ -420,18 +420,79 @@ const styles = StyleSheet.create({
     fontSize: 30
   },
 
+  docLine: {
+    top: -25,
+    left: 0,
+    width: 300,
+    height: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2F2F2F',
+    color: '#FFFCF7',
+    fontSize: 30
+  },
+
+  docTitle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#171717',
+    color: '#E0E2DB',
+    fontSize: 30
+  },
+
+  docText: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    fontSize: 25,
+    fontWeight: 'bold'
+  },
+
   modeDisplay: {
     top: 75,
     left: 0,
     width: 300,
     height: 175,
-    justifyContent: 'center',
+    //justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
     borderRadius: 25,
     backgroundColor: '#171717',
     color: '#FFFCF7',
     fontSize: 30
+  },
+
+  modeLine: {
+    top: -25,
+    left: 0,
+    width: 300,
+    height: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2F2F2F',
+    color: '#FFFCF7',
+    fontSize: 30
+  },
+
+  modeTitle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#171717',
+    color: '#E0E2DB',
+    //fontFamily: 'OpenSans-Bold',
+    fontSize: 30
+  },
+
+  modeText: {
+    top: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    fontSize: 40,
+    textTransform: 'capitalize',
+    fontWeight: 'bold'
   },
 
   textWhite: {
@@ -470,4 +531,18 @@ const styles = StyleSheet.create({
         </Text>
       </TouchableOpacity>
 
+
+
+
+  const [labelMode, setLabelMode] = useState('Command')
+  const modeTextHandler = event => setLabelMode('Mindful')
+      <Text
+        style={styles.modeDisplay} >
+        <Text style={styles.modeTitle}>{'             '}Mode{'\n\n'}</Text>
+        {labelMode}
+        {mode}
+        {'\n'}
+        {modeDisplay}
+        <Text style={styles.modeText}>{modeDisplay}</Text>
+      </Text>
 */
