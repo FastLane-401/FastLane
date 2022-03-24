@@ -272,6 +272,11 @@ const App = () => {
       {/* Setting and Account Information Bar*/}
       <View
         style={styles.infoDisplay} >
+        <Image
+            style={styles.settingsImage}
+            source={require("../img/gear-solid.png")}
+        />
+        <View style={styles.accountImage}></View>
       </View>
 
       {/* Document name Display */}
@@ -347,15 +352,36 @@ const styles = StyleSheet.create({
   infoDisplay: {
     top: -30,
     left: 0,
-    width: 500,
+    width: 400,
     height: 60,
-    //justifyContent: 'center',
-    alignItems: 'center',
     padding: 10,
-    borderRadius: 25,
     backgroundColor: '#171717',
     color: '#FFFCF7',
     fontSize: 30
+  },
+
+  settingsImage: {
+    top: 5,
+    left: 15,
+    width: 35,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#171717'
+  },
+
+  accountImage: {
+    top: -30,
+    left: 330,
+    width: 35,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#ad6f05'
   },
 
   micButton: {
@@ -420,7 +446,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
-    //borderRadius: 100,
     backgroundColor: '#ad6f05'
   },
 
@@ -430,7 +455,6 @@ const styles = StyleSheet.create({
     left: 0,
     width: 300,
     height: 250,
-    //justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
     borderRadius: 25,
@@ -473,7 +497,6 @@ const styles = StyleSheet.create({
     left: 0,
     width: 300,
     height: 175,
-    //justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
     borderRadius: 25,
