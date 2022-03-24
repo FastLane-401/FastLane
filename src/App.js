@@ -9,8 +9,11 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
   PermissionsAndroid
 } from 'react-native'
+
+
 import Voice from '@react-native-voice/voice'
 
 
@@ -287,21 +290,22 @@ const App = () => {
       <TouchableOpacity
         onPress={startRecognizing}
         style={styles.micButton} >
-        <Text
-          style={styles.textWhite} >
-          MIC
 
-        </Text>
+        <Image
+            style={styles.micImage}
+            source={require("../img/microphone-solid.png")}
+        />
       </TouchableOpacity>
 
       {/* Document Button */}
       <TouchableOpacity
         onPress={() => setCountDoc(countDoc + 1)}
         style={styles.docButton} >
-        <Text
-          style={styles.textAlabaster} >
-          DOC
-        </Text>
+
+        <Image
+            style={styles.docImage}
+            source={require("../img/folder-open-solid.png")}
+        />
       </TouchableOpacity>
 
 
@@ -312,10 +316,11 @@ const App = () => {
         onPress={modeDisplayHandler}
 
         style={styles.modeButton} >
-        <Text
-          style={styles.textAlabaster} >
-          MODE
-        </Text>
+
+        <Image
+            style={styles.modeImage}
+            source={require("../img/lightbulb-solid.png")}
+        />
       </TouchableOpacity>
 
     </View>
@@ -346,6 +351,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#f39900'
   },
 
+  micImage: {
+      width: 45,
+      height: 60,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 10,
+      borderRadius: 100,
+      backgroundColor: '#f39900'
+    },
+
   docButton: {
     top: 75,
     left: -125,
@@ -355,6 +370,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderRadius: 100,
+    backgroundColor: '#ad6f05'
+  },
+
+  docImage: {
+    left: 2,
+    width: 35,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
     backgroundColor: '#ad6f05'
   },
 
@@ -369,6 +394,17 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: '#ad6f05'
   },
+
+  modeImage: {
+    width: 25,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    //borderRadius: 100,
+    backgroundColor: '#ad6f05'
+  },
+
 
   docDisplay: {
     top: 25,
