@@ -14,11 +14,6 @@ const Home = (props) => {
   return (
       <View
         style={styles.screen}>
-        {
-          user
-            ? <TouchableOpacity style={styles.authButton} onPress={SignOut}><Text styles={styles.textWhite}>{user.displayName}</Text></TouchableOpacity>
-            : <TouchableOpacity style={styles.authButton} onPress={SignIn}><Text styles={styles.textWhite}>SignIn</Text></TouchableOpacity>
-        }
 
       {/* Setting and Account Information Bar*/}
       <View
@@ -27,8 +22,29 @@ const Home = (props) => {
             style={styles.settingsImage}
             source={require("../../img/gear-solid.png")}
         />
-        <View style={styles.accountImage}></View>
+
+        {
+            user
+                ? <TouchableOpacity
+                    style={styles.authButton}
+                    onPress={SignOut}>
+                    <Text
+                        styles={styles.textWhite}>
+                            {user.displayName}
+                    </Text>
+                  </TouchableOpacity>
+                : <TouchableOpacity
+                    style={styles.authButton}
+                    onPress={SignIn}>
+                    <Text
+                        styles={styles.textWhite}>
+                            SignIn
+                    </Text>
+                  </TouchableOpacity>
+        }
+
       </View>
+
 
 
         {/* Document name Display */}
@@ -131,6 +147,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#171717'
   },
 
+  authButton: {
+    top: -30,
+    left: 310,
+    width: 60,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 5,
+    borderRadius: 20,
+    color: '#E0E2DB',
+    backgroundColor: '#ad6f05'
+  },
+
   accountImage: {
     top: -30,
     left: 330,
@@ -211,14 +240,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ad6f05'
   },
 
-
-  authButton: {
-    top: -25,
-    right: -125,
-    alignItems: 'flex-end',
-    padding: 5
-  },
-
     docDisplay: {
     top: 15,
     left: 0,
@@ -261,21 +282,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
 
-/*
-  modeDisplay: {
-    top: 75,
-    left: 0,
-    width: 300,
-    height: 175,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 25,
-    backgroundColor: '#171717',
-    color: '#FFFCF7',
-    fontSize: 30
-  },
-*/
   modeDisplay: {
     top: 65,
     left: 0,
