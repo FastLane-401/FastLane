@@ -42,8 +42,8 @@ const AuthProvider = ({ children }) => {
   const SignOut = async () => {
     try {
       await GoogleSignin.signOut()
-      setUser(undefined)
-      auth().signOut
+      setUser(null)
+      auth().signOut()
     } catch (e) {
       console.error(e)
     }
