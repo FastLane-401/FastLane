@@ -12,6 +12,8 @@
     "build": "webpack --config webpack.prod.config.js"
   },
   "dependencies": {
+    "@react-native-firebase/app": "^14.7.0",
+    "@react-native-google-signin/google-signin": "^7.2.2",
     "@react-native-voice/voice": "^3.2.2",
     "firebase": "^9.6.7",
     "react": "^17.0.2",

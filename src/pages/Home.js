@@ -1,66 +1,62 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity
 } from 'react-native'
+import { AuthContext } from '../contexts/AuthContext'
 
 const Home = (props) => {
-  // Set up functions for buttons
-  const [countDoc, setCountDoc] = useState(0)
-  const [countMode, setCountMode] = useState(0)
-
-  const [labelMode, setLabelMode] = useState('Command')
-
-  const modeTextHandler = event => setLabelMode('Mindful')
-
+  const { user, SignIn, SignOut } = useContext(AuthContext)
+  console.log({ user })
   return (
-        <View
-            style = {styles.screen}>
+      <View
+        style={styles.screen}>
+        <Text
+          style={styles.docDisplay} >
+          <Text style={styles.boldText}>         Document{'\n\n'}</Text>
+          {props.results[0]}
+        </Text>
 
-            <Text
-            style={styles.docDisplay} >
-                <Text style={styles.boldText}>         Document{'\n\n'}</Text>
-                Long document name...
-            </Text>
+        <Text
+          style={styles.modeDisplay} >
+          <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
+          {props.labelMode}
+        </Text>
 
-            <Text
-            style={styles.modeDisplay} >
-                <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
-                {labelMode}
-            </Text>
+        {
+          user
+            ? <TouchableOpacity onPress={SignOut}><Text>SignOut</Text></TouchableOpacity>
+            : <TouchableOpacity onPress={SignIn}><Text>SignIn</Text></TouchableOpacity>
+        }
+        <TouchableOpacity
+          onPress={props.startRecognizing}
+          style={styles.micButton} >
+          <Text
+            style={styles.textWhite} >
+            MIC
+          </Text>
+        </TouchableOpacity>
 
-            <TouchableOpacity
-                onPress={props.startRecognizing}
-                style={styles.micButton} >
-                <Text
-                    style={styles.textWhite} >
-                    MIC
-                </Text>
-            </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => props.setCountDoc(props.countDoc + 1)}
+          style={styles.docButton} >
+          <Text
+            style={styles.textAlabaster} >
+            DOC
+          </Text>
+        </TouchableOpacity>
 
-            <TouchableOpacity
-                onPress={() => setCountDoc(countDoc + 1)}
-                style={styles.docButton} >
-                <Text
-                    style={styles.textAlabaster} >
-                    DOC
-                </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() => setCountMode(countMode + 1)}
-                onPress={modeTextHandler}
-                style={styles.modeButton} >
-                <Text
-                    style={styles.textAlabaster} >
-                    MODE
-                </Text>
-            </TouchableOpacity>
-
-        </View>
-
+        <TouchableOpacity
+          onPress={props.modeTextHandler}
+          style={styles.modeButton} >
+          <Text
+            style={styles.textAlabaster} >
+            MODE
+          </Text>
+        </TouchableOpacity>
+      </View>
   )
 }
 
@@ -115,7 +111,7 @@ const styles = StyleSheet.create({
     top: 25,
     left: 0,
     width: 300,
-    height: 175,
+    height: 250,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,

@@ -13,15 +13,15 @@ import {
 } from 'react-native'
 import Voice from '@react-native-voice/voice'
 import Tts from 'react-native-tts'
+import { AuthProvider } from './contexts/AuthContext'
+import Home from './pages/Home'
 
-//Global variables
-var inputs = new Array()
-var session_title = "# Mindful Mode Session\n"
-var mode = "mindful"
+// Global variables
+const inputs = []
+let sessionTitle = '# Mindful Mode Session\n'
+const modes = ['Command', 'Mindful', 'Editing']
 const RNFS = require('react-native-fs')
-var path = RNFS.DocumentDirectoryPath + '/new_session.md'
-
-
+let path = RNFS.DocumentDirectoryPath + '/new_session.md'
 
 const App = () => {
   const [isListening, setIsListening] = useState(false)
@@ -31,9 +31,14 @@ const App = () => {
   const [read, setRead] = useState()
 
   const [countDoc, setCountDoc] = useState(0)
-  const [countMode, setCountMode] = useState(0)
-  const [labelMode, setLabelMode] = useState('Command')
-  const modeTextHandler = event => setLabelMode('Mindful')
+  const [labelMode, setLabelMode] = useState(modes[0])
+  const modeTextHandler = () => {
+    labelMode === modes[0]
+      ? setLabelMode(modes[1])
+      : labelMode === modes[1]
+        ? setLabelMode(modes[2])
+        : setLabelMode(modes[0])
+  }
 
   const requestRecordPermission = async () => {
     await PermissionsAndroid.request(
@@ -46,7 +51,7 @@ const App = () => {
     setIsListening(true)
   }
 
-  const onEnd = (e) => {
+  const onEnd = () => {
     console.log('Ending Listening')
     setIsListening(false)
   }
@@ -61,101 +66,81 @@ const App = () => {
     console.log('Results: ', results)
     setResults(results.value)
     const RNFS = require('react-native-fs')
-    //path = RNFS.DocumentDirectoryPath + '/voicelog.md'
+    // path = RNFS.DocumentDirectoryPath + '/voicelog.md'
 
-    if(results.value[0] == "clear session")
+    if (results.value[0] === 'clear session') {
+      RNFS.writeFile(path, sessionTitle, 'utf8')
+        .then((success) => {
+          console.log('Cleared session')
+          Tts.speak('Current session cleared.')
+        })
+        .catch((err) => {
+          console.log('PROBLEM HERE')
+          console.log(err.message)
+          Tts.speak('Error clearing session.')
+        })
+    } else if (results.value[0].startsWith('rename session')) {
+      const newName = results.value[0].slice(15).split(' ').join('_')
+      console.log('Renaming Session File Name')
+      RNFS.moveFile(path, RNFS.DocumentDirectoryPath + '/' + newName + '.md')
+      path = RNFS.DocumentDirectoryPath + '/' + newName + '.md'
+      Tts.speak('Current session renamed to ' + results.value[0].slice(15))
+    } else if (results.value[0].startsWith('rename title')) {
+      sessionTitle = '# ' + results.value[0].slice(13) + '\n'
+      console.log('Renaming Title')
 
-    {
-        RNFS.writeFile(path, session_title, 'utf8')
+      RNFS.writeFile(path, sessionTitle, 'utf8')
+        .then((success) => {
+          console.log('Cleared session')
+          Tts.speak('Current session title renamed to ' + results.value[0].slice(13))
+        })
+        .catch((err) => {
+          console.log('PROBLEM HERE')
+          console.log(err.message)
+          Tts.speak('Error renaming session title.')
+        })
+      for (let i = 0; i < inputs.length; i++) {
+        RNFS.appendFile(path, '- ' + inputs[i] + '\n', 'utf8')
           .then((success) => {
-            console.log('Cleared session')
-            Tts.speak('Current session cleared.')
+            console.log('FILE WRITTEN: ' + path)
+            inputs.push(results.value[0])
           })
           .catch((err) => {
             console.log('PROBLEM HERE')
             console.log(err.message)
-            Tts.speak('Error clearing session.')
           })
-    }
-    else if(results.value[0].startsWith("rename session"))
-    {
-        newName = results.value[0].slice(15).split(' ').join('_')
-        console.log('Renaming Session File Name')
-        RNFS.moveFile(path, RNFS.DocumentDirectoryPath+'/'+newName+".md")
-        path = RNFS.DocumentDirectoryPath+'/'+newName+".md"
-        Tts.speak('Current session renamed to ' + results.value[0].slice(15))
-    }
-    else if(results.value[0].startsWith("rename title"))
-    {
-        session_title = "# "+results.value[0].slice(13)+"\n"
-        console.log('Renaming Title')
-
-        RNFS.writeFile(path, session_title, 'utf8')
-          .then((success) => {
-            console.log('Cleared session')
-            Tts.speak('Current session title renamed to ' + results.value[0].slice(13))
-          })
-          .catch((err) => {
-            console.log('PROBLEM HERE')
-            console.log(err.message)
-            Tts.speak('Error renaming session title.')
-          })
-        for(let i = 0; i < inputs.length; i++)
-        {
-          RNFS.appendFile(path, '- ' +inputs[i]+'\n', 'utf8')
-            .then((success) => {
-              console.log('FILE WRITTEN: ' + path)
-              inputs.push(results.value[0])
-            })
-            .catch((err) => {
-              console.log('PROBLEM HERE')
-              console.log(err.message)
-            })
-        }
-    }
-    else if(results.value[0].startsWith("select mode"))
-    {
-        if(results.value[0].slice(12) == "mindful")
-        {
-            console.log('Mindful Mode Selected')
-            setLabelMode("Mindful")
-            Tts.speak('Mindful Mode Selected')
-        }
-        else if(results.value[0].slice(12) == "command")
-        {
-            console.log('Command Mode Selected')
-            setLabelMode("Command")
-            Tts.speak('Command Mode Selected')
-        }
-        else if(results.value[0].slice(12) == "editing")
-        {
-            console.log('Assisted Editing Mode Selected')
-            setLabelMode("Assisted Editing")
-            Tts.speak('Assisted Editing Mode Selected')
-        }
-        else
-        {
-            console.log('Incorrect Mode Specified')
-            Tts.speak('Incorrect Mode Specified')
-        }
-    }
-
-    else if(results.value[0].startsWith("playback session"))
-        ttsFilePlayback(results.value[0].slice(17))
-    else if(results.value[0].startsWith("play back session"))
-        ttsFilePlayback(results.value[0].slice(18))
-    else if(results.value[0] == ("playback") || results.value[0] == ("play back"))
-        ttsPlayback()
-    else
-    {
-        /* if you want text to persist in the file between button presses, use
+      }
+    } else if (results.value[0].startsWith('select mode')) {
+      if (results.value[0].slice(12) === 'mindful') {
+        console.log('Mindful Mode Selected')
+        setLabelMode('Mindful')
+        Tts.speak('Mindful Mode Selected')
+      } else if (results.value[0].slice(12) === 'command') {
+        console.log('Command Mode Selected')
+        setLabelMode('Command')
+        Tts.speak('Command Mode Selected')
+      } else if (results.value[0].slice(12) === 'editing') {
+        console.log('Assisted Editing Mode Selected')
+        setLabelMode('Assisted Editing')
+        Tts.speak('Assisted Editing Mode Selected')
+      } else {
+        console.log('Incorrect Mode Specified')
+        Tts.speak('Incorrect Mode Specified')
+      }
+    } else if (results.value[0].startsWith('playback session')) {
+      ttsFilePlayback(results.value[0].slice(17))
+    } else if (results.value[0].startsWith('play back session')) {
+      ttsFilePlayback(results.value[0].slice(18))
+    } else if (results.value[0] === ('playback') || results.value[0] === ('play back')) {
+      ttsPlayback()
+    } else {
+      /* if you want text to persist in the file between button presses, use
          * appendFile() instead of writeFile(). You should also probably modify
          * the second parameter to ' ' + e.value[0] so text strings don't run
          * together between button presses. */
-        inputs.push(results.value[0])
-        if(inputs.length == 1)
-        {
-        RNFS.writeFile(path, session_title, 'utf8')
+      inputs.push(results.value[0])
+      if (inputs.length === 1) {
+        RNFS.writeFile(path, sessionTitle, 'utf8')
           .then((success) => {
             console.log('Cleared session')
           })
@@ -163,9 +148,9 @@ const App = () => {
             console.log('PROBLEM HERE')
             console.log(err.message)
           })
-        }
+      }
 
-        RNFS.appendFile(path, '- ' +results.value[0]+'\n', 'utf8')
+      RNFS.appendFile(path, '- ' + results.value[0] + '\n', 'utf8')
         .then((success) => {
           console.log('FILE WRITTEN: ' + path)
           inputs.push(results.value[0])
@@ -193,7 +178,7 @@ const App = () => {
     return () => {
       Voice.destroy().then(Voice.removeAllListeners)
     }
-  }, [])
+  })
 
   const startRecognizing = async () => {
     console.log('test')
@@ -241,7 +226,7 @@ const App = () => {
   const _readVoiceLog = async () => {
     try {
       const RNFS = require('react-native-fs')
-      //const path = RNFS.DocumentDirectoryPath + '/voicelog.txt'
+      // const path = RNFS.DocumentDirectoryPath + '/voicelog.txt'
 
       RNFS.readFile(path, 'utf8')
         .then((data) => {
@@ -256,35 +241,29 @@ const App = () => {
     }
   }
 
-  //Event for TTS playback from current session
-  const ttsPlayback = async() =>
-  {
-    RNFS.readFile(path, 'utf8').then((data) =>
-    {
-        console.log('SESSION PLAYBACK: ' + path)
-        Tts.speak(data)
+  // Event for TTS playback from current session
+  const ttsPlayback = async () => {
+    RNFS.readFile(path, 'utf8').then((data) => {
+      console.log('SESSION PLAYBACK: ' + path)
+      Tts.speak(data)
     })
-    .catch((error) =>
-    {
+      .catch((error) => {
         console.log(error.message)
-        Tts.speak("Unexpected error on playback of current session.")
-    })
+        Tts.speak('Unexpected error on playback of current session.')
+      })
   }
 
-  //Event for TTS playback from voice session file
-  const ttsFilePlayback = async(fileName) =>
-  {
-    filePath = RNFS.DocumentDirectoryPath + '/' + fileName.split(' ').join('_') + '.md'
-    RNFS.readFile(filePath, 'utf8').then((data) =>
-    {
-        console.log('FILE PLAYBACK: ' + filePath)
-        Tts.speak(data)
+  // Event for TTS playback from voice session file
+  const ttsFilePlayback = async (fileName) => {
+    const filePath = RNFS.DocumentDirectoryPath + '/' + fileName.split(' ').join('_') + '.md'
+    RNFS.readFile(filePath, 'utf8').then((data) => {
+      console.log('FILE PLAYBACK: ' + filePath)
+      Tts.speak(data)
     })
-    .catch((error) =>
-    {
+      .catch((error) => {
         console.log(error.message)
-        Tts.speak("Unable to find session file.")
-    })
+        Tts.speak('Unable to find session file.')
+      })
   }
 
   useEffect(() => {
@@ -292,51 +271,16 @@ const App = () => {
   }, [])
 
   return (
-    <View
-      style={styles.screen}>
-
-      <Text
-        style={styles.docDisplay} >
-        <Text style={styles.boldText}>         Document{'\n\n'}</Text>
-        {results[0]}
-      </Text>
-
-      <Text
-        style={styles.modeDisplay} >
-        <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
-        {labelMode}
-      </Text>
-
-      <TouchableOpacity
-        onPress={startRecognizing}
-        style={styles.micButton} >
-        <Text
-          style={styles.textWhite} >
-          MIC
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => setCountDoc(countDoc + 1)}
-        style={styles.docButton} >
-        <Text
-          style={styles.textAlabaster} >
-          DOC
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => setCountMode(countMode + 1)}
-        onPress={modeTextHandler}
-        style={styles.modeButton} >
-        <Text
-          style={styles.textAlabaster} >
-          MODE
-        </Text>
-      </TouchableOpacity>
-
-    </View>
-
+    <AuthProvider>
+      <Home
+        results={results}
+        labelMode={labelMode}
+        startRecognizing={startRecognizing}
+        setCountDoc={setCountDoc}
+        countDoc={countDoc}
+        modeTextHandler={modeTextHandler}
+      />
+    </AuthProvider>
   )
 }
 
