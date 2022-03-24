@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   TouchableOpacity
 } from 'react-native'
 import { AuthContext } from '../contexts/AuthContext'
@@ -18,43 +19,55 @@ const Home = (props) => {
             ? <TouchableOpacity style={styles.authButton} onPress={SignOut}><Text styles={styles.textWhite}>{user.displayName}</Text></TouchableOpacity>
             : <TouchableOpacity style={styles.authButton} onPress={SignIn}><Text styles={styles.textWhite}>SignIn</Text></TouchableOpacity>
         }
+
+        {/* Document name Display */}
         <Text
           style={styles.docDisplay} >
           <Text style={styles.boldText}>         Document{'\n\n'}</Text>
           {props.results[0]}
         </Text>
 
+        {/* Mode Display */}
         <Text
           style={styles.modeDisplay} >
           <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
           {props.labelMode}
         </Text>
 
+        {/* Mic Button */}
         <TouchableOpacity
           onPress={props.startRecognizing}
           style={styles.micButton} >
-          <Text
-            style={styles.textWhite} >
-            MIC
-          </Text>
+
+          <Image
+            style={styles.micImage}
+            source={require("../../img/microphone-solid.png")}
+          />
+
         </TouchableOpacity>
 
+        {/* Document Button */}
         <TouchableOpacity
           onPress={() => props.setCountDoc(props.countDoc + 1)}
           style={styles.docButton} >
-          <Text
-            style={styles.textAlabaster} >
-            DOC
-          </Text>
+
+          <Image
+            style={styles.docImage}
+            source={require("../../img/folder-open-solid.png")}
+          />
+
         </TouchableOpacity>
 
+        {/* Mode Button */}
         <TouchableOpacity
           onPress={props.modeTextHandler}
           style={styles.modeButton} >
-          <Text
-            style={styles.textAlabaster} >
-            MODE
-          </Text>
+
+          <Image
+            style={styles.modeImage}
+            source={require("../../img/lightbulb-solid.png")}
+          />
+
         </TouchableOpacity>
       </View>
   )
@@ -83,6 +96,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#f39900'
   },
 
+  micImage: {
+      width: 45,
+      height: 60,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 10,
+      borderRadius: 100,
+      backgroundColor: '#f39900'
+    },
+
+
   docButton: {
     top: 75,
     left: -125,
@@ -95,6 +119,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#ad6f05'
   },
 
+  docImage: {
+    left: 2,
+    width: 35,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#ad6f05'
+  },
+
+
   modeButton: {
     top: 15,
     left: 125,
@@ -106,6 +141,16 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: '#ad6f05'
   },
+
+  modeImage: {
+    width: 25,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#ad6f05'
+  },
+
 
   authButton: {
     top: -25,
