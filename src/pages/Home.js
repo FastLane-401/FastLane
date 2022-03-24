@@ -20,6 +20,17 @@ const Home = (props) => {
             : <TouchableOpacity style={styles.authButton} onPress={SignIn}><Text styles={styles.textWhite}>SignIn</Text></TouchableOpacity>
         }
 
+      {/* Setting and Account Information Bar*/}
+      <View
+        style={styles.infoDisplay} >
+        <Image
+            style={styles.settingsImage}
+            source={require("../../img/gear-solid.png")}
+        />
+        <View style={styles.accountImage}></View>
+      </View>
+
+
         {/* Document name Display */}
         <View style={styles.docDisplay} >
             <Text
@@ -96,6 +107,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#2F2F2F'
   },
+
+  infoDisplay: {
+    top: -30,
+    left: 0,
+    width: 400,
+    height: 60,
+    padding: 10,
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    fontSize: 30
+  },
+
+  settingsImage: {
+    top: 5,
+    left: 15,
+    width: 35,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#171717'
+  },
+
+  accountImage: {
+    top: -30,
+    left: 330,
+    width: 35,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#ad6f05'
+  },
+
 
   micButton: {
     top: 120,
