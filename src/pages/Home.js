@@ -13,6 +13,11 @@ const Home = (props) => {
   return (
       <View
         style={styles.screen}>
+        {
+          user
+            ? <TouchableOpacity style={styles.authButton} onPress={SignOut}><Text styles={styles.textWhite}>{user.displayName}</Text></TouchableOpacity>
+            : <TouchableOpacity style={styles.authButton} onPress={SignIn}><Text styles={styles.textWhite}>SignIn</Text></TouchableOpacity>
+        }
         <Text
           style={styles.docDisplay} >
           <Text style={styles.boldText}>         Document{'\n\n'}</Text>
@@ -25,11 +30,6 @@ const Home = (props) => {
           {props.labelMode}
         </Text>
 
-        {
-          user
-            ? <TouchableOpacity onPress={SignOut}><Text>SignOut</Text></TouchableOpacity>
-            : <TouchableOpacity onPress={SignIn}><Text>SignIn</Text></TouchableOpacity>
-        }
         <TouchableOpacity
           onPress={props.startRecognizing}
           style={styles.micButton} >
@@ -105,6 +105,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 100,
     backgroundColor: '#ad6f05'
+  },
+
+  authButton: {
+    top: -25,
+    right: -125,
+    alignItems: 'flex-end',
+    padding: 5
   },
 
   docDisplay: {
