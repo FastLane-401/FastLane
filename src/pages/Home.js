@@ -21,18 +21,31 @@ const Home = (props) => {
         }
 
         {/* Document name Display */}
-        <Text
-          style={styles.docDisplay} >
-          <Text style={styles.boldText}>         Document{'\n\n'}</Text>
-          {props.results[0]}
-        </Text>
+        <View style={styles.docDisplay} >
+            <Text
+                style={styles.docTitle}>
+                    Document{'\n'}
+            </Text>
+            <View style={styles.docLine}></View>
+            <Text
+                style={styles.docText}
+                numberOfLines={4}>
+                    {props.results[0]}
+            </Text>
+        </View>
+
 
         {/* Mode Display */}
-        <Text
-          style={styles.modeDisplay} >
-          <Text style={styles.boldText}>{'             '}Mode{'\n\n'}</Text>
-          {props.labelMode}
-        </Text>
+        <View style={styles.modeDisplay} >
+            <Text style={styles.modeTitle}>
+                Mode{'\n'}
+            </Text>
+            <View style={styles.modeLine}></View>
+            <Text style={styles.modeText}>
+                {props.labelMode}
+            </Text>
+        </View>
+
 
         {/* Mic Button */}
         <TouchableOpacity
@@ -85,7 +98,7 @@ const styles = StyleSheet.create({
   },
 
   micButton: {
-    top: 150,
+    top: 120,
     left: 0,
     width: 100,
     height: 100,
@@ -95,6 +108,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: '#f39900'
   },
+
 
   micImage: {
       width: 45,
@@ -108,7 +122,7 @@ const styles = StyleSheet.create({
 
 
   docButton: {
-    top: 75,
+    top: 45,
     left: -125,
     width: 60,
     height: 60,
@@ -129,9 +143,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ad6f05'
   },
 
-
   modeButton: {
-    top: 15,
+    top: -15,
     left: 125,
     width: 60,
     height: 60,
@@ -159,12 +172,11 @@ const styles = StyleSheet.create({
     padding: 5
   },
 
-  docDisplay: {
-    top: 25,
+    docDisplay: {
+    top: 15,
     left: 0,
     width: 300,
     height: 250,
-    justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
     borderRadius: 25,
@@ -173,6 +185,36 @@ const styles = StyleSheet.create({
     fontSize: 30
   },
 
+  docLine: {
+    top: -25,
+    left: 0,
+    width: 300,
+    height: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2F2F2F',
+    color: '#FFFCF7',
+    fontSize: 30
+  },
+
+  docTitle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#171717',
+    color: '#E0E2DB',
+    fontSize: 30
+  },
+
+  docText: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    fontSize: 25,
+    fontWeight: 'bold'
+  },
+
+/*
   modeDisplay: {
     top: 75,
     left: 0,
@@ -186,6 +228,52 @@ const styles = StyleSheet.create({
     color: '#FFFCF7',
     fontSize: 30
   },
+*/
+  modeDisplay: {
+    top: 65,
+    left: 0,
+    width: 300,
+    height: 175,
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 25,
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    fontSize: 30
+  },
+
+  modeLine: {
+    top: -25,
+    left: 0,
+    width: 300,
+    height: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2F2F2F',
+    color: '#FFFCF7',
+    fontSize: 30
+  },
+
+  modeTitle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#171717',
+    color: '#E0E2DB',
+    //fontFamily: 'OpenSans-Bold',
+    fontSize: 30
+  },
+
+  modeText: {
+    top: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    fontSize: 40,
+    textTransform: 'capitalize',
+    fontWeight: 'bold'
+  },
+
 
   textWhite: {
     color: '#FFFCF7'
