@@ -69,17 +69,21 @@ const App = () => {
         RNFS.writeFile(path, session_title, 'utf8')
           .then((success) => {
             console.log('Cleared session')
+            Tts.speak('Current session cleared.')
           })
           .catch((err) => {
             console.log('PROBLEM HERE')
             console.log(err.message)
+            Tts.speak('Error clearing session.')
           })
     }
     else if(results.value[0].startsWith("rename session"))
     {
+        newName = results.value[0].slice(15).split(' ').join('_')
         console.log('Renaming Session File Name')
-        RNFS.moveFile(path, RNFS.DocumentDirectoryPath+'/'+results.value[0].slice(15)+".md")
-        path = RNFS.DocumentDirectoryPath+'/'+results.value[0].slice(15)+".md"
+        RNFS.moveFile(path, RNFS.DocumentDirectoryPath+'/'+newName+".md")
+        path = RNFS.DocumentDirectoryPath+'/'+newName+".md"
+        Tts.speak('Current session renamed to ' + results.value[0].slice(15))
     }
     else if(results.value[0].startsWith("rename title"))
     {
@@ -89,10 +93,12 @@ const App = () => {
         RNFS.writeFile(path, session_title, 'utf8')
           .then((success) => {
             console.log('Cleared session')
+            Tts.speak('Current session title renamed to ' + results.value[0].slice(13))
           })
           .catch((err) => {
             console.log('PROBLEM HERE')
             console.log(err.message)
+            Tts.speak('Error renaming session title.')
           })
         for(let i = 0; i < inputs.length; i++)
         {
@@ -112,20 +118,26 @@ const App = () => {
         if(results.value[0].slice(12) == "mindful")
         {
             console.log('Mindful Mode Selected')
+            setLabelMode("Mindful")
+            Tts.speak('Mindful Mode Selected')
         }
         else if(results.value[0].slice(12) == "command")
         {
             console.log('Command Mode Selected')
+            setLabelMode("Command")
+            Tts.speak('Command Mode Selected')
         }
         else if(results.value[0].slice(12) == "editing")
         {
             console.log('Assisted Editing Mode Selected')
+            setLabelMode("Assisted Editing")
+            Tts.speak('Assisted Editing Mode Selected')
         }
         else
         {
             console.log('Incorrect Mode Specified')
+            Tts.speak('Incorrect Mode Specified')
         }
-
     }
 
     else if(results.value[0].startsWith("playback session"))
