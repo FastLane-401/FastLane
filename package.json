@@ -18,6 +18,7 @@
     "react-dom": "^17.0.2",
     "react-native": "^0.67.1",
     "react-native-fs": "^2.19.0",
+    "react-native-tts": "^4.1.0",
     "react-native-web": "^0.17.5"
   },
   "devDependencies": {
