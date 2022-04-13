@@ -11,11 +11,13 @@ import { AuthProvider } from './contexts/AuthContext'
 import Home from './pages/Home'
 
 // Global variables
+const organized_inputs = [[]]
 const inputs = []
 let sessionTitle = '# Mindful Mode Session\n'
 const modes = ['Command', 'Mindful', 'Editing']
 const RNFS = require('react-native-fs')
 let path = RNFS.DocumentDirectoryPath + '/new_session.md'
+var similarity = require('string-cosine-similarity')
 
 const App = () => {
   const [isListening, setIsListening] = useState(false)
@@ -132,6 +134,28 @@ const App = () => {
          * appendFile() instead of writeFile(). You should also probably modify
          * the second parameter to ' ' + e.value[0] so text strings don't run
          * together between button presses. */
+      if (inputs.length === 0) {
+        organized_inputs[0].push(results.value[0])
+      } else {
+        var maxSim = .3
+        var indexToInsert = -1
+//        get the total for each string
+        organized_inputs.forEach(arrayOne => {
+            var totalSim = 0
+            var avgSim = 0
+            arrayOne.forEach(element => {
+                sim = similarity(results.value[0], element)
+                totalSim += sim
+                // get index of new best
+
+            })
+            avgSim = totalSim / arrayOne.length
+            if (avgSim > maxSim) {
+                maxSim = avgSim
+                indexToInsert = currIndex
+            }
+        });
+      }
       inputs.push(results.value[0])
       if (inputs.length === 1) {
         RNFS.writeFile(path, sessionTitle, 'utf8')

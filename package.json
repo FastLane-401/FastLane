@@ -22,7 +22,8 @@
     "react-native": "^0.67.1",
     "react-native-fs": "^2.19.0",
     "react-native-tts": "^4.1.0",
-    "react-native-web": "^0.17.5"
+    "react-native-web": "^0.17.5",
+    "string-cosine-similarity": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
