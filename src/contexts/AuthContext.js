@@ -18,7 +18,9 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     auth().onAuthStateChanged(setUser)
-  }, [])
+    console.log('Authentication state changed')
+    console.log('user', user)
+  })
 
   const authenticated = !!user
 

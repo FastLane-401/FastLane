@@ -7,10 +7,12 @@ import {
   TouchableOpacity
 } from 'react-native'
 import { AuthContext } from '../contexts/AuthContext'
+import { SpeechContext } from '../contexts/SpeechContext'
 
 const Home = (props) => {
   const { user, SignIn, SignOut } = useContext(AuthContext)
-  console.log({ user })
+  const { micPressed, results } = useContext(SpeechContext)
+  console.log({user})
   return (
       <View
         style={styles.screen}>
@@ -42,11 +44,7 @@ const Home = (props) => {
                     </Text>
                   </TouchableOpacity>
         }
-
       </View>
-
-
-
         {/* Document name Display */}
         <View style={styles.docDisplay} >
             <Text
@@ -76,7 +74,7 @@ const Home = (props) => {
 
         {/* Mic Button */}
         <TouchableOpacity
-          onPress={props.startRecognizing}
+          onPress={micPressed}
           style={styles.micButton} >
 
           <Image
