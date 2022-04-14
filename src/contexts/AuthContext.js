@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import auth from '@react-native-firebase/auth'
 import React, {
@@ -5,7 +6,6 @@ import React, {
   useState,
   useEffect
 } from 'react'
-import { processColor } from 'react-native'
 
 const AuthContext = createContext()
 GoogleSignin.configure({
@@ -18,8 +18,6 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     auth().onAuthStateChanged(setUser)
-    console.log('Authentication state changed')
-    console.log('user', user)
   })
 
   const authenticated = !!user
