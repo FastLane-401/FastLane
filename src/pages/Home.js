@@ -9,10 +9,10 @@ import {
 import { AuthContext } from '../contexts/AuthContext'
 import { SpeechContext } from '../contexts/SpeechContext'
 
-const Home = (props) => {
+const Home = () => {
   const { user, SignIn, SignOut } = useContext(AuthContext)
-  const { micPressed, results } = useContext(SpeechContext)
-  console.log({user})
+  const { micPressed, results, labelMode, setCountDoc, countDoc, modeTextHandler } = useContext(SpeechContext)
+  console.log({ user })
   return (
       <View
         style={styles.screen}>
@@ -22,12 +22,12 @@ const Home = (props) => {
         style={styles.infoDisplay} >
         <Image
             style={styles.settingsImage}
-            source={require("../../img/gear-solid.png")}
+            source={require('../../img/gear-solid.png')}
         />
 
         {
             user
-                ? <TouchableOpacity
+              ? <TouchableOpacity
                     style={styles.authButton}
                     onPress={SignOut}>
                     <Text
@@ -35,7 +35,7 @@ const Home = (props) => {
                             {user.displayName}
                     </Text>
                   </TouchableOpacity>
-                : <TouchableOpacity
+              : <TouchableOpacity
                     style={styles.authButton}
                     onPress={SignIn}>
                     <Text
@@ -55,10 +55,9 @@ const Home = (props) => {
             <Text
                 style={styles.docText}
                 numberOfLines={4}>
-                    {props.results[0]}
+                    {results[0]}
             </Text>
         </View>
-
 
         {/* Mode Display */}
         <View style={styles.modeDisplay} >
@@ -67,10 +66,9 @@ const Home = (props) => {
             </Text>
             <View style={styles.modeLine}></View>
             <Text style={styles.modeText}>
-                {props.labelMode}
+                {labelMode}
             </Text>
         </View>
-
 
         {/* Mic Button */}
         <TouchableOpacity
@@ -79,31 +77,31 @@ const Home = (props) => {
 
           <Image
             style={styles.micImage}
-            source={require("../../img/microphone-solid.png")}
+            source={require('../../img/microphone-solid.png')}
           />
 
         </TouchableOpacity>
 
         {/* Document Button */}
         <TouchableOpacity
-          onPress={() => props.setCountDoc(props.countDoc + 1)}
+          onPress={() => setCountDoc(countDoc + 1)}
           style={styles.docButton} >
 
           <Image
             style={styles.docImage}
-            source={require("../../img/folder-open-solid.png")}
+            source={require('../../img/folder-open-solid.png')}
           />
 
         </TouchableOpacity>
 
         {/* Mode Button */}
         <TouchableOpacity
-          onPress={props.modeTextHandler}
+          onPress={modeTextHandler}
           style={styles.modeButton} >
 
           <Image
             style={styles.modeImage}
-            source={require("../../img/lightbulb-solid.png")}
+            source={require('../../img/lightbulb-solid.png')}
           />
 
         </TouchableOpacity>
@@ -170,7 +168,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ad6f05'
   },
 
-
   micButton: {
     top: 120,
     left: 0,
@@ -183,17 +180,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#f39900'
   },
 
-
   micImage: {
-      width: 45,
-      height: 60,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 10,
-      borderRadius: 100,
-      backgroundColor: '#f39900'
-    },
-
+    width: 45,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#f39900'
+  },
 
   docButton: {
     top: 45,
@@ -238,7 +233,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ad6f05'
   },
 
-    docDisplay: {
+  docDisplay: {
     top: 15,
     left: 0,
     width: 300,
@@ -310,7 +305,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#171717',
     color: '#E0E2DB',
-    //fontFamily: 'OpenSans-Bold',
+    // fontFamily: 'OpenSans-Bold',
     fontSize: 30
   },
 
@@ -324,7 +319,6 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     fontWeight: 'bold'
   },
-
 
   textWhite: {
     color: '#FFFCF7'
