@@ -44,7 +44,9 @@ const Home = (props) => {
                     </Text>
                   </TouchableOpacity>
         }
+
       </View>
+
         {/* Document name Display */}
         <View style={styles.docDisplay} >
             <Text
