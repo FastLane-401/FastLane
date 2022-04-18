@@ -7,12 +7,18 @@ import React, {
 import Tts from 'react-native-tts'
 import Voice from '@react-native-voice/voice'
 import { PermissionsAndroid } from 'react-native'
+//import scs from 'simple-cosine-similarity'
 
+const organized_inputs = []
+const parsed_organized_inputs = []
 const inputs = []
+let tmp = []
 let sessionTitle = '# Mindful Mode Session\n'
 const modes = ['Command', 'Mindful', 'Editing']
 const RNFS = require('react-native-fs')
 let path = RNFS.DocumentDirectoryPath + '/new_session.md'
+const cosineSimilarity = require("simple-cosine-similarity")
+const { removeStopwords } = require('stopword')
 
 const SpeechContext = React.createContext()
 
@@ -131,27 +137,109 @@ const SpeechProvider = ({ children }) => {
          * appendFile() instead of writeFile(). You should also probably modify
          * the second parameter to ' ' + e.value[0] so text strings don't run
          * together between button presses. */
-      inputs.push(results.value[0])
-      if (inputs.length === 1) {
-        RNFS.writeFile(path, sessionTitle, 'utf8')
-          .then((success) => {
-            console.log('Cleared session')
-          })
-          .catch((err) => {
-            console.log('PROBLEM HERE')
-            console.log(err.message)
-          })
-      }
+      let parsed_input_array = removeStopwords(results.value[0].split(' '))
+      let parsed_input = parsed_input_array.toString();
+      parsed_input = parsed_input.replace(/,/g, " ")
+      console.log(parsed_input)
+      if (inputs.length === 0) {
+        tmp = [results.value[0]]
+        organized_inputs.push(tmp)
 
-      RNFS.appendFile(path, '- ' + results.value[0] + '\n', 'utf8')
-        .then((success) => {
-          console.log('FILE WRITTEN: ' + path)
-          inputs.push(results.value[0])
-        })
-        .catch((err) => {
-          console.log('PROBLEM HERE')
-          console.log(err.message)
-        })
+        tmp = [parsed_input]
+        parsed_organized_inputs.push(tmp)
+      } else {
+            var maxSim = .5
+            var indexToInsert = -1
+            var currIndex = 0
+            //get the total for each string
+
+            for(var i = 0; i < organized_inputs.length; i++){
+                var totalSim = 0
+                var avgSim = 0
+                for(var j = 0; j < organized_inputs[i].length; j++){
+                    let sim = cosineSimilarity(results.value[0], parsed_organized_inputs[i][j])
+                    totalSim += sim
+                    // get index of new best
+
+                }
+                avgSim = totalSim / organized_inputs[i].length
+                console.log(avgSim)
+                if (avgSim > maxSim) {
+                    maxSim = avgSim
+                    indexToInsert = i
+                }
+                currIndex+= 1
+            }
+            if(indexToInsert === -1){
+                tmp = [results.value[0]]
+                organized_inputs.push(tmp)
+                tmp = [parsed_input]
+                parsed_organized_inputs.push(tmp)
+
+            }else {
+                organized_inputs[indexToInsert].push(results.value[0])
+                parsed_organized_inputs[indexToInsert].push(parsed_input)
+
+            }
+
+
+        }
+//      inputs.push(results.value[0])
+//      if (inputs.length === 1) {
+//        RNFS.writeFile(path, sessionTitle, 'utf8')
+//          .then((success) => {
+//            console.log('Cleared session')
+//          })
+//          .catch((err) => {
+//            console.log('PROBLEM HERE')
+//            console.log(err.message)
+//          })
+//
+//
+//      }
+      RNFS.writeFile(path, sessionTitle, 'utf8')
+       .then((success) => {
+         console.log('Cleared session')
+       })
+       .catch((err) => {
+         console.log('PROBLEM HERE')
+         console.log(err.message)
+       })
+//      RNFS.appendFile(path, '- ' + results.value[0] + '\n', 'utf8')
+//        .then((success) => {
+//          console.log('FILE WRITTEN: ' + path)
+//          inputs.push(results.value[0])
+//        })
+//        .catch((err) => {
+//          console.log('PROBLEM HERE')
+//          console.log(err.message)
+//        })
+        inputs.push(results.value[0])
+        currIndex = 0
+          for(var i = 0; i < organized_inputs.length; i++){
+                    RNFS.appendFile(path, '- Grouping ' + currIndex + '\n', 'utf8')
+                      .then((success) => {
+                        console.log('FILE WRITTEN: ' + path)
+                      })
+                      .catch((err) => {
+                        console.log('PROBLEM HERE')
+                        console.log(err.message)
+                      })
+
+                        for(var j = 0; j < organized_inputs[i].length; j++){
+                            RNFS.appendFile(path, '  - ' + organized_inputs[i][j] + '\n', 'utf8')
+                              .then((success) => {
+                                console.log('FILE WRITTEN: ' + path)
+                                 })
+                              .catch((err) => {
+                                console.log('PROBLEM HERE')
+                                console.log(err.message)
+                              })
+
+                        }
+                    currIndex+= 1
+                    }
+
     }
     console.log('in onResults')
     stopRecognizing()
