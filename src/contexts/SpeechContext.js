@@ -1,14 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   createContext,
+  useContext,
   useState,
   useEffect
 } from 'react'
 import Tts from 'react-native-tts'
 import Voice from '@react-native-voice/voice'
 import { PermissionsAndroid } from 'react-native'
+import { GDriveContext } from './GDriveContext'
 
 const inputs = []
+const fileName = 'Fastlane-Session.txt'
 let sessionTitle = '# Mindful Mode Session\n'
 const modes = ['Command', 'Mindful', 'Editing']
 const RNFS = require('react-native-fs')
@@ -25,6 +28,7 @@ const SpeechProvider = ({ children }) => {
 
   const [countDoc, setCountDoc] = useState(0)
   const [labelMode, setLabelMode] = useState(modes[0])
+  const { writeToDrive } = useContext(GDriveContext)
   const modeTextHandler = () => {
     labelMode === modes[0]
       ? setLabelMode(modes[1])
@@ -126,6 +130,12 @@ const SpeechProvider = ({ children }) => {
       ttsFilePlayback(results.value[0].slice(18))
     } else if (results.value[0] === ('playback') || results.value[0] === ('play back')) {
       ttsPlayback()
+    } else if (results.value[0].startsWith('write to Google Drive')) {
+      console.log('Writing to Google Drive')
+      Tts.speak('Writing to Google Drive')
+      RNFS.readFile(path, 'utf8').then((data) => {
+        writeToDrive(fileName, data)
+      })
     } else {
       /* if you want text to persist in the file between button presses, use
          * appendFile() instead of writeFile(). You should also probably modify
