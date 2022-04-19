@@ -1,26 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   createContext,
+  useContext,
   useState,
   useEffect
 } from 'react'
 import Tts from 'react-native-tts'
 import Voice from '@react-native-voice/voice'
 import { PermissionsAndroid } from 'react-native'
-//import scs from 'simple-cosine-similarity'
+// import scs from 'simple-cosine-similarity'
+import { GDriveContext } from './GDriveContext'
 
-const organized_inputs = []
-const parsed_organized_inputs = []
+const organizedInputs = []
+const parsedOrganizedInputs = []
 const inputs = []
 let tmp = []
+const fileName = 'Fastlane-Session.txt'
 let sessionTitle = '# Mindful Mode Session\n'
 const modes = ['Command', 'Mindful', 'Editing']
 const RNFS = require('react-native-fs')
 let path = RNFS.DocumentDirectoryPath + '/new_session.md'
-const cosineSimilarity = require("simple-cosine-similarity")
+const cosineSimilarity = require('simple-cosine-similarity')
 const { removeStopwords } = require('stopword')
 
-const SpeechContext = React.createContext()
+const SpeechContext = createContext()
 
 const SpeechProvider = ({ children }) => {
   const [isListening, setIsListening] = useState(false)
@@ -31,6 +34,7 @@ const SpeechProvider = ({ children }) => {
 
   const [countDoc, setCountDoc] = useState(0)
   const [labelMode, setLabelMode] = useState(modes[0])
+  const { writeToDrive } = useContext(GDriveContext)
   const modeTextHandler = () => {
     labelMode === modes[0]
       ? setLabelMode(modes[1])
@@ -132,114 +136,113 @@ const SpeechProvider = ({ children }) => {
       ttsFilePlayback(results.value[0].slice(18))
     } else if (results.value[0] === ('playback') || results.value[0] === ('play back')) {
       ttsPlayback()
+    } else if (results.value[0].startsWith('write to Google Drive')) {
+      console.log('Writing to Google Drive')
+      Tts.speak('Writing to Google Drive')
+      RNFS.readFile(path, 'utf8').then((data) => {
+        writeToDrive(fileName, data)
+      })
     } else {
       /* if you want text to persist in the file between button presses, use
          * appendFile() instead of writeFile(). You should also probably modify
          * the second parameter to ' ' + e.value[0] so text strings don't run
          * together between button presses. */
-      let parsed_input_array = removeStopwords(results.value[0].split(' '))
-      let parsed_input = parsed_input_array.toString();
-      parsed_input = parsed_input.replace(/,/g, " ")
-      console.log(parsed_input)
+      const parsedInputArray = removeStopwords(results.value[0].split(' '))
+      let parsedInput = parsedInputArray.toString()
+      parsedInput = parsedInput.replace(/,/g, ' ')
+      console.log(parsedInput)
+      let currIndex = 0
       if (inputs.length === 0) {
         tmp = [results.value[0]]
-        organized_inputs.push(tmp)
+        organizedInputs.push(tmp)
 
-        tmp = [parsed_input]
-        parsed_organized_inputs.push(tmp)
+        tmp = [parsedInput]
+        parsedOrganizedInputs.push(tmp)
       } else {
-            var maxSim = .5
-            var indexToInsert = -1
-            var currIndex = 0
-            //get the total for each string
+        let maxSim = 0.5
+        let indexToInsert = -1
+        // get the total for each string
 
-            for(var i = 0; i < organized_inputs.length; i++){
-                var totalSim = 0
-                var avgSim = 0
-                for(var j = 0; j < organized_inputs[i].length; j++){
-                    let sim = cosineSimilarity(results.value[0], parsed_organized_inputs[i][j])
-                    totalSim += sim
-                    // get index of new best
-
-                }
-                avgSim = totalSim / organized_inputs[i].length
-                console.log(avgSim)
-                if (avgSim > maxSim) {
-                    maxSim = avgSim
-                    indexToInsert = i
-                }
-                currIndex+= 1
-            }
-            if(indexToInsert === -1){
-                tmp = [results.value[0]]
-                organized_inputs.push(tmp)
-                tmp = [parsed_input]
-                parsed_organized_inputs.push(tmp)
-
-            }else {
-                organized_inputs[indexToInsert].push(results.value[0])
-                parsed_organized_inputs[indexToInsert].push(parsed_input)
-
-            }
-
-
+        for (let i = 0; i < organizedInputs.length; i++) {
+          let totalSim = 0
+          let avgSim = 0
+          for (let j = 0; j < organizedInputs[i].length; j++) {
+            const sim = cosineSimilarity(results.value[0], parsedOrganizedInputs[i][j])
+            totalSim += sim
+            // get index of new best
+          }
+          avgSim = totalSim / organizedInputs[i].length
+          console.log(avgSim)
+          if (avgSim > maxSim) {
+            maxSim = avgSim
+            indexToInsert = i
+          }
+          currIndex += 1
         }
-//      inputs.push(results.value[0])
-//      if (inputs.length === 1) {
-//        RNFS.writeFile(path, sessionTitle, 'utf8')
-//          .then((success) => {
-//            console.log('Cleared session')
-//          })
-//          .catch((err) => {
-//            console.log('PROBLEM HERE')
-//            console.log(err.message)
-//          })
-//
-//
-//      }
+        if (indexToInsert === -1) {
+          tmp = [results.value[0]]
+          organizedInputs.push(tmp)
+          tmp = [parsedInput]
+          parsedOrganizedInputs.push(tmp)
+        } else {
+          organizedInputs[indexToInsert].push(results.value[0])
+          parsedOrganizedInputs[indexToInsert].push(parsedInput)
+        }
+      }
+      //      inputs.push(results.value[0])
+      //      if (inputs.length === 1) {
+      //        RNFS.writeFile(path, sessionTitle, 'utf8')
+      //          .then((success) => {
+      //            console.log('Cleared session')
+      //          })
+      //          .catch((err) => {
+      //            console.log('PROBLEM HERE')
+      //            console.log(err.message)
+      //          })
+      //
+      //
+      //      }
       RNFS.writeFile(path, sessionTitle, 'utf8')
-       .then((success) => {
-         console.log('Cleared session')
-       })
-       .catch((err) => {
-         console.log('PROBLEM HERE')
-         console.log(err.message)
-       })
-//      RNFS.appendFile(path, '- ' + results.value[0] + '\n', 'utf8')
-//        .then((success) => {
-//          console.log('FILE WRITTEN: ' + path)
-//          inputs.push(results.value[0])
-//        })
-//        .catch((err) => {
-//          console.log('PROBLEM HERE')
-//          console.log(err.message)
-//        })
-        inputs.push(results.value[0])
-        currIndex = 0
-          for(var i = 0; i < organized_inputs.length; i++){
-                    RNFS.appendFile(path, '- Grouping ' + currIndex + '\n', 'utf8')
-                      .then((success) => {
-                        console.log('FILE WRITTEN: ' + path)
-                      })
-                      .catch((err) => {
-                        console.log('PROBLEM HERE')
-                        console.log(err.message)
-                      })
+        .then((success) => {
+          console.log('Cleared session')
+        })
+        .catch((err) => {
+          console.log('PROBLEM HERE')
+          console.log(err.message)
+        })
+      //      RNFS.appendFile(path, '- ' + results.value[0] + '\n', 'utf8')
+      //        .then((success) => {
+      //          console.log('FILE WRITTEN: ' + path)
+      //          inputs.push(results.value[0])
+      //        })
+      //        .catch((err) => {
+      //          console.log('PROBLEM HERE')
+      //          console.log(err.message)
+      //        })
+      inputs.push(results.value[0])
+      currIndex = 0
+      for (let i = 0; i < organizedInputs.length; i++) {
+        RNFS.appendFile(path, '- Grouping ' + currIndex + '\n', 'utf8')
+          .then((success) => {
+            console.log('FILE WRITTEN: ' + path)
+          })
+          .catch((err) => {
+            console.log('PROBLEM HERE')
+            console.log(err.message)
+          })
 
-                        for(var j = 0; j < organized_inputs[i].length; j++){
-                            RNFS.appendFile(path, '  - ' + organized_inputs[i][j] + '\n', 'utf8')
-                              .then((success) => {
-                                console.log('FILE WRITTEN: ' + path)
-                                 })
-                              .catch((err) => {
-                                console.log('PROBLEM HERE')
-                                console.log(err.message)
-                              })
-
-                        }
-                    currIndex+= 1
-                    }
-
+        for (let j = 0; j < organizedInputs[i].length; j++) {
+          RNFS.appendFile(path, '  - ' + organizedInputs[i][j] + '\n', 'utf8')
+            .then((success) => {
+              console.log('FILE WRITTEN: ' + path)
+            })
+            .catch((err) => {
+              console.log('PROBLEM HERE')
+              console.log(err.message)
+            })
+        }
+        currIndex += 1
+      }
     }
     console.log('in onResults')
     stopRecognizing()
