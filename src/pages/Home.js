@@ -8,11 +8,12 @@ import {
 } from 'react-native'
 import { AuthContext } from '../contexts/AuthContext'
 import { SpeechContext } from '../contexts/SpeechContext'
+import { GDriveContext } from '../contexts/GDriveContext'
 
 const Home = () => {
-  const { user, SignIn, SignOut } = useContext(AuthContext)
+  const { user, SignIn, SignOut, getToken } = useContext(AuthContext)
   const { micPressed, results, labelMode, setCountDoc, countDoc, modeTextHandler } = useContext(SpeechContext)
-  console.log({ user })
+  const { listDriveFiles } = useContext(GDriveContext)
   return (
       <View
         style={styles.screen}>
@@ -32,7 +33,7 @@ const Home = () => {
                     onPress={SignOut}>
                     <Text
                         styles={styles.textWhite}>
-                            {user.displayName}
+                            {user.givenName}
                     </Text>
                   </TouchableOpacity>
               : <TouchableOpacity
@@ -86,7 +87,7 @@ const Home = () => {
 
         {/* Document Button */}
         <TouchableOpacity
-          onPress={() => setCountDoc(countDoc + 1)}
+          onPress={() => listDriveFiles()}
           style={styles.docButton} >
 
           <Image
