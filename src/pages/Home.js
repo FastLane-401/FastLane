@@ -1,9 +1,10 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   StyleSheet,
   Text,
   View,
   Image,
+  Modal,
   TouchableOpacity
 } from 'react-native'
 import { AuthContext } from '../contexts/AuthContext'
@@ -15,11 +16,41 @@ const Home = () => {
   const { micPressed, results, labelMode, setCountDoc, countDoc, modeTextHandler } = useContext(SpeechContext)
   const { listDriveFiles } = useContext(GDriveContext)
 
-  let files
+  const [modalVisible, setModalVisible] = useState(false);
+
+  var files
 
   return (
       <View
         style={styles.screen}>
+
+      {/* Document List Popup */}
+      <View>
+        <Modal
+                animationType="slide"
+                visible={modalVisible}
+                onRequestClose={() => {
+                  setModalVisible(!modalVisible);
+                }}
+              >
+              <View style={styles.modeDisplay} >
+                    <Text>
+                    "Test"
+                    </Text>
+
+                            <TouchableOpacity
+                                      onPress={() => setModalVisible(false)}
+                                      style={styles.docButton} >
+
+                                      <Image
+                                        style={styles.docImage}
+                                        source={require('../../img/folder-open-solid.png')}
+                                      />
+                            </TouchableOpacity>
+              </View>
+
+        </Modal>
+      </View>
 
       {/* Setting and Account Information Bar */}
       <View
@@ -91,6 +122,7 @@ const Home = () => {
         {/* Document Button */}
         <TouchableOpacity
           onPress={() => files = listDriveFiles()}
+          onPress={() => setModalVisible(true)}
           style={styles.docButton} >
 
           <Image
