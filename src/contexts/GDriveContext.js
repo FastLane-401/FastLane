@@ -162,7 +162,6 @@ const GDriveProvider = ({ children }) => {
             console.log('  Array file: ', f);
             })
 
-    return(file_names)
   }
 
   return (

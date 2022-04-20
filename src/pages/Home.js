@@ -36,7 +36,7 @@ const Home = () => {
                   setModalVisible(!modalVisible);
                 }}
               >
-              <View style={styles.docDisplay} >
+              <View style={styles.screen} >
                     <Text>
                     "Test"
                     </Text>
@@ -144,7 +144,7 @@ const Home = () => {
 
         {/* Document Button */}
         <TouchableOpacity
-          onPress={() => {files = listDriveFiles(); setModalVisible(true)}}
+          onPress={() => {listDriveFiles(); setModalVisible(true)}}
 
           style={styles.docButton} >
 
