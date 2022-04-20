@@ -5,6 +5,8 @@ import {
   View,
   Image,
   Modal,
+  FlatList,
+  Button,
   TouchableOpacity
 } from 'react-native'
 import { AuthContext } from '../contexts/AuthContext'
@@ -28,12 +30,13 @@ const Home = () => {
       <View>
         <Modal
                 animationType="slide"
+                transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
                   setModalVisible(!modalVisible);
                 }}
               >
-              <View style={styles.modeDisplay} >
+              <View style={styles.docDisplay} >
                     <Text>
                     "Test"
                     </Text>
@@ -47,6 +50,26 @@ const Home = () => {
                                         source={require('../../img/folder-open-solid.png')}
                                       />
                             </TouchableOpacity>
+
+                    <FlatList
+                            data={[
+                              {key: 'Devin'},
+                              {key: 'Dan'},
+                              {key: 'Dominic'},
+                              {key: 'Jackson'},
+                              {key: 'James'},
+                              {key: 'Joel'},
+                              {key: 'John'},
+                              {key: 'Jillian'},
+                              {key: 'Jimmy'},
+                              {key: 'Julie'},
+                            ]}
+                            keyExtractor={item => item.key.toString()}
+                            renderItem={({item}) =>
+                                <Button title={item.key}> <Text>{item.key}</Text> </Button>
+
+                            }
+                          />
               </View>
 
         </Modal>
@@ -121,8 +144,8 @@ const Home = () => {
 
         {/* Document Button */}
         <TouchableOpacity
-          onPress={() => files = listDriveFiles()}
-          onPress={() => setModalVisible(true)}
+          onPress={() => {files = listDriveFiles(); setModalVisible(true)}}
+
           style={styles.docButton} >
 
           <Image
