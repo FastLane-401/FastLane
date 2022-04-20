@@ -137,6 +137,32 @@ const GDriveProvider = ({ children }) => {
     console.log('Access Token: ', gdrive.accessToken)
     console.log({ dirId })
     console.log(await gdrive.files.list(dirId))
+
+    console.log(' ')
+    console.log({ dirId })
+    const dir = await getDirId()
+    const files_in_folder = await gdrive.files.list({
+                                    q: new ListQueryBuilder()
+                                    .in(dir, 'parents')
+                                    })
+
+    console.log(await gdrive.files.list({
+        q: new ListQueryBuilder()
+        .in(dir, 'parents')
+        }))
+
+    console.log('File names:')
+    var file_names = [];
+    files_in_folder.files.forEach(function (file) {
+        console.log('  Found file: ', file.name, file.id);
+        file_names.push(file.name)
+        })
+
+    file_names.forEach(function (f) {
+            console.log('  Array file: ', f);
+            })
+
+    return(file_names)
   }
 
   return (

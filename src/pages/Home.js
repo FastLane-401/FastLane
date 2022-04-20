@@ -14,6 +14,9 @@ const Home = () => {
   const { user, SignIn, SignOut, getToken } = useContext(AuthContext)
   const { micPressed, results, labelMode, setCountDoc, countDoc, modeTextHandler } = useContext(SpeechContext)
   const { listDriveFiles } = useContext(GDriveContext)
+
+  let files
+
   return (
       <View
         style={styles.screen}>
@@ -87,7 +90,7 @@ const Home = () => {
 
         {/* Document Button */}
         <TouchableOpacity
-          onPress={() => listDriveFiles()}
+          onPress={() => files = listDriveFiles()}
           style={styles.docButton} >
 
           <Image
