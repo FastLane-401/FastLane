@@ -16,6 +16,18 @@ import { AuthContext } from './AuthContext'
 
 const GDriveContext = createContext()
 const gdrive = new GDrive()
+var file_names = []
+var files_in_folder
+
+const TestData = [
+    {id: 1,name: 'Apple',},
+    {id: 2,name: 'Mango',},
+    {id: 3,name: 'Pappaya'},
+    {id: 4,name: 'Orange'},
+    {id: 5,name: 'Banana'},
+    {id: 6,name: 'Kiwi'},
+    ]
+
 
 const GDriveProvider = ({ children }) => {
   const [dirId, setDirId] = useState()
@@ -141,18 +153,15 @@ const GDriveProvider = ({ children }) => {
     console.log(' ')
     console.log({ dirId })
     const dir = await getDirId()
-    const files_in_folder = await gdrive.files.list({
+    files_in_folder = await gdrive.files.list({
                                     q: new ListQueryBuilder()
                                     .in(dir, 'parents')
                                     })
 
-    console.log(await gdrive.files.list({
-        q: new ListQueryBuilder()
-        .in(dir, 'parents')
-        }))
+    console.log(files_in_folder)
 
     console.log('File names:')
-    var file_names = [];
+    file_names = [];
     files_in_folder.files.forEach(function (file) {
         console.log('  Found file: ', file.name, file.id);
         file_names.push(file.name)
@@ -161,6 +170,9 @@ const GDriveProvider = ({ children }) => {
     file_names.forEach(function (f) {
             console.log('  Array file: ', f);
             })
+
+
+    console.log(TestData)
 
   }
 

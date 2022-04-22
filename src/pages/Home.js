@@ -6,6 +6,7 @@ import {
   Image,
   Modal,
   FlatList,
+  Pressable,
   Button,
   TouchableOpacity
 } from 'react-native'
@@ -16,11 +17,32 @@ import { GDriveContext } from '../contexts/GDriveContext'
 const Home = () => {
   const { user, SignIn, SignOut, getToken } = useContext(AuthContext)
   const { micPressed, results, labelMode, setCountDoc, countDoc, modeTextHandler } = useContext(SpeechContext)
-  const { listDriveFiles } = useContext(GDriveContext)
+  const { TestData, files_in_folder, file_names, listDriveFiles } = useContext(GDriveContext)
+
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState(null);
 
   var files
+
+const Item = ({ title, onPress}) => (
+
+  <View style={styles.docListButtonsView}>
+  <TouchableOpacity
+    style={styles.docListButtons}
+    onPress={onPress}
+    >
+    <Text style={styles.docListButtonsText} numberOfLines={1}>{title}</Text>
+  </TouchableOpacity>
+  </View>
+);
+
+  const renderItem = ({ item }) => (
+    <Item
+        title={item.name}
+        onPress={() => setSelectedDoc(item.id)}
+    />
+  );
 
   return (
       <View
@@ -37,39 +59,38 @@ const Home = () => {
                 }}
               >
               <View style={styles.screen} >
-                    <Text>
-                    "Test"
-                    </Text>
 
-                            <TouchableOpacity
-                                      onPress={() => setModalVisible(false)}
-                                      style={styles.docButton} >
+                    <View paddingBottom={15}/>
 
-                                      <Image
-                                        style={styles.docImage}
-                                        source={require('../../img/folder-open-solid.png')}
-                                      />
-                            </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        style={styles.docListFileButton} >
+
+                        <Image
+                            style={styles.docImage}
+                            source={require('../../img/folder-open-solid.png')}
+                        />
+                    </TouchableOpacity>
+
+                    <View paddingBottom={15}/>
 
                     <FlatList
                             data={[
-                              {key: 'Devin'},
-                              {key: 'Dan'},
-                              {key: 'Dominic'},
-                              {key: 'Jackson'},
-                              {key: 'James'},
-                              {key: 'Joel'},
-                              {key: 'John'},
-                              {key: 'Jillian'},
-                              {key: 'Jimmy'},
-                              {key: 'Julie'},
+                              {name: 'Devin Devin Devin Devin Devin Devin Devin Devin ', id: '0'},
+                              {name: 'Dan', id: '1'},
+                              {name: 'Dominic', id: '2'},
+                              {name: 'Jackson', id: '3'},
+                              {name: 'James', id: '4'},
+                              {name: 'Joel', id: '5'},
+                              {name: 'John', id: '6'},
+                              {name: 'Jillian', id: '7'},
+                              {name: 'Jimmy', id: '8'},
+                              {name: 'Julie', id: '9'},
                             ]}
-                            keyExtractor={item => item.key.toString()}
-                            renderItem={({item}) =>
-                                <Button title={item.key}> <Text>{item.key}</Text> </Button>
-
-                            }
+                            keyExtractor={item => item.name}
+                            renderItem={renderItem}
                           />
+
               </View>
 
         </Modal>
@@ -391,6 +412,45 @@ const styles = StyleSheet.create({
 
   boldText: {
     fontWeight: 'bold'
+  },
+
+
+  docListButtonsView: {
+    backgroundColor: '#2F2F2F',
+    paddingTop: 2,
+    paddingBottom: 2
+  },
+
+
+  docListButtons: {
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    borderRadius: 20,
+    width: 300,
+    fontSize: 10,
+    paddingTop: 10,
+    paddingBottom: 10
+  },
+
+  docListButtonsText: {
+    color: '#FFFCF7',
+    fontSize: 20,
+    fontWeight: 'bold',
+    paddingLeft: 10,
+    paddingRight: 10
+  },
+
+  docListFileButton: {
+    left: -125,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#ad6f05'
   }
 
+
 })
+
