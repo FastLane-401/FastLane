@@ -15,7 +15,6 @@ const organizedInputs = []
 const parsedOrganizedInputs = []
 const inputs = []
 let tmp = []
-const fileName = 'Fastlane-Session.txt'
 let sessionTitle = '# Mindful Mode Session\n'
 const modes = ['Command', 'Mindful', 'Editing']
 const RNFS = require('react-native-fs')
@@ -31,6 +30,7 @@ const SpeechProvider = ({ children }) => {
   const [partialResults, setPartialResults] = useState([])
   const [error, setError] = useState()
   const [read, setRead] = useState()
+  const [filename, setFilename] = useState('Fastlane-Session.txt')
 
   const [countDoc, setCountDoc] = useState(0)
   const [labelMode, setLabelMode] = useState(modes[0])
@@ -47,6 +47,10 @@ const SpeechProvider = ({ children }) => {
     await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
     )
+  }
+
+  const changeFilename = (name) => {
+    setFilename(name)
   }
 
   const onStart = (e) => {
@@ -140,7 +144,7 @@ const SpeechProvider = ({ children }) => {
       console.log('Writing to Google Drive')
       Tts.speak('Writing to Google Drive')
       RNFS.readFile(path, 'utf8').then((data) => {
-        writeToDrive(fileName, data)
+        writeToDrive(filename, data)
       })
     } else {
       /* if you want text to persist in the file between button presses, use
@@ -373,7 +377,9 @@ const SpeechProvider = ({ children }) => {
       labelMode,
       setCountDoc,
       countDoc,
-      modeTextHandler
+      modeTextHandler,
+      filename,
+      changeFilename
     }}
     >
       {children}
