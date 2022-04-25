@@ -17,15 +17,6 @@ import { AuthContext } from './AuthContext'
 const GDriveContext = createContext()
 const gdrive = new GDrive()
 
-const TestData = [
-  { id: 1, name: 'Apple' },
-  { id: 2, name: 'Mango' },
-  { id: 3, name: 'Pappaya' },
-  { id: 4, name: 'Orange' },
-  { id: 5, name: 'Banana' },
-  { id: 6, name: 'Kiwi' }
-]
-
 const GDriveProvider = ({ children }) => {
   const [dirId, setDirId] = useState()
   const [files, setFiles] = useState([])
@@ -155,27 +146,7 @@ const GDriveProvider = ({ children }) => {
       q: new ListQueryBuilder()
         .in(dir, 'parents')
     })
-
-    console.log(folder)
-
-    console.log('File names:')
-    /*
-    const allFiles = []
-    folder.files.forEach(file => {
-      console.log('  Found file: ', file.name, file.id)
-      allFiles.push([file.name, file.id])
-    })
-    setFiles(allFiles)
-    */
     setFiles(folder.files)
-
-    /*
-    files.forEach(function (f) {
-      console.log('  Array file: ', f)
-    })
-    */
-
-    console.log(TestData)
   }
 
   return (
