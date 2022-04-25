@@ -6,8 +6,6 @@ import {
   Image,
   Modal,
   FlatList,
-  Pressable,
-  Button,
   TouchableOpacity
 } from 'react-native'
 import { AuthContext } from '../contexts/AuthContext'
@@ -16,16 +14,13 @@ import { GDriveContext } from '../contexts/GDriveContext'
 
 const Home = () => {
   const { user, SignIn, SignOut, getToken } = useContext(AuthContext)
-  const { micPressed, results, labelMode, setCountDoc, countDoc, modeTextHandler } = useContext(SpeechContext)
-  const { TestData, files_in_folder, file_names, listDriveFiles } = useContext(GDriveContext)
+  const { micPressed, results, labelMode, modeTextHandler, filename, changeFilename } = useContext(SpeechContext)
+  const { files, listDriveFiles } = useContext(GDriveContext)
+  console.log({ files })
 
+  const [modalVisible, setModalVisible] = useState(false)
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedDoc, setSelectedDoc] = useState(null);
-
-  var files
-
-const Item = ({ title, onPress}) => (
+  const Item = ({ title, onPress }) => (
 
   <View style={styles.docListButtonsView}>
   <TouchableOpacity
@@ -35,14 +30,14 @@ const Item = ({ title, onPress}) => (
     <Text style={styles.docListButtonsText} numberOfLines={1}>{title}</Text>
   </TouchableOpacity>
   </View>
-);
+  )
 
   const renderItem = ({ item }) => (
     <Item
         title={item.name}
-        onPress={() => setSelectedDoc(item.id)}
+        onPress={() => changeFilename(item.name)}
     />
-  );
+  )
 
   return (
       <View
@@ -55,7 +50,7 @@ const Item = ({ title, onPress}) => (
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                  setModalVisible(!modalVisible);
+                  setModalVisible(!modalVisible)
                 }}
               >
               <View style={styles.screen} >
@@ -75,19 +70,8 @@ const Item = ({ title, onPress}) => (
                     <View paddingBottom={15}/>
 
                     <FlatList
-                            data={[
-                              {name: 'Devin Devin Devin Devin Devin Devin Devin Devin ', id: '0'},
-                              {name: 'Dan', id: '1'},
-                              {name: 'Dominic', id: '2'},
-                              {name: 'Jackson', id: '3'},
-                              {name: 'James', id: '4'},
-                              {name: 'Joel', id: '5'},
-                              {name: 'John', id: '6'},
-                              {name: 'Jillian', id: '7'},
-                              {name: 'Jimmy', id: '8'},
-                              {name: 'Julie', id: '9'},
-                            ]}
-                            keyExtractor={item => item.name}
+                            data={files}
+                            keyExtractor={item => item.id}
                             renderItem={renderItem}
                           />
 
@@ -130,7 +114,7 @@ const Item = ({ title, onPress}) => (
         <View style={styles.docDisplay} >
             <Text
                 style={styles.docTitle}>
-                    Document{'\n'}
+                    {filename}{'\n'}
             </Text>
             <View style={styles.docLine}></View>
             <Text
@@ -165,7 +149,7 @@ const Item = ({ title, onPress}) => (
 
         {/* Document Button */}
         <TouchableOpacity
-          onPress={() => {listDriveFiles(); setModalVisible(true)}}
+          onPress={() => { listDriveFiles(); setModalVisible(true) }}
 
           style={styles.docButton} >
 
@@ -414,13 +398,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
 
-
   docListButtonsView: {
     backgroundColor: '#2F2F2F',
     paddingTop: 2,
     paddingBottom: 2
   },
-
 
   docListButtons: {
     backgroundColor: '#171717',
@@ -451,6 +433,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#ad6f05'
   }
 
-
 })
-
