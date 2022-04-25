@@ -57,6 +57,7 @@ const Home = () => {
 
                     <View paddingBottom={15}/>
 
+                    <View height={60}>
                     <TouchableOpacity
                         onPress={() => setModalVisible(false)}
                         style={styles.docListFileButton} >
@@ -66,6 +67,14 @@ const Home = () => {
                             source={require('../../img/folder-open-solid.png')}
                         />
                     </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        style={styles.docListNewButton} >
+
+                        <Text style={styles.docListNewTest}>+</Text>
+                    </TouchableOpacity>
+                    </View>
 
                     <View paddingBottom={15}/>
 
@@ -431,6 +440,28 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 100,
     backgroundColor: '#ad6f05'
+  },
+
+  docListNewButton: {
+    left: 125,
+    top: -60,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
+    borderRadius: 100,
+    backgroundColor: '#ad6f05'
+  },
+
+  docListNewTest: {
+  top: -5,
+  justifyContent: 'center',
+  alignItems: 'center',
+  color: '#E0E2DB',
+  fontSize: 50,
+  textTransform: 'capitalize',
+  fontWeight: 'bold'
   }
 
 })
