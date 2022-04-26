@@ -11,15 +11,19 @@ import { PermissionsAndroid } from 'react-native'
 // import scs from 'simple-cosine-similarity'
 import { GDriveContext } from './GDriveContext'
 
+let listening = 0
 const organizedInputs = []
 const parsedOrganizedInputs = []
 const inputs = []
 let tmp = []
+let mode = "Command"
+let command_document = ["# Command Document Title"]
 const fileName = 'Fastlane-Session.txt'
 let sessionTitle = '# Mindful Mode Session\n'
-const modes = ['Command', 'Mindful', 'Editing']
+const modes = ['Command', 'Mindful', ' Assisted Editing']
 const RNFS = require('react-native-fs')
 let path = RNFS.DocumentDirectoryPath + '/new_session.md'
+let document_path = RNFS.DocumentDirectoryPath + '/new_document.md'
 const cosineSimilarity = require('simple-cosine-similarity')
 const { removeStopwords } = require('stopword')
 
@@ -36,11 +40,13 @@ const SpeechProvider = ({ children }) => {
   const [labelMode, setLabelMode] = useState(modes[0])
   const { writeToDrive } = useContext(GDriveContext)
   const modeTextHandler = () => {
-    labelMode === modes[0]
-      ? setLabelMode(modes[1])
-      : labelMode === modes[1]
-        ? setLabelMode(modes[2])
-        : setLabelMode(modes[0])
+
+
+//    labelMode === modes[0]
+//      ? setLabelMode(modes[1])
+//      : labelMode === modes[1]
+//        ? setLabelMode(modes[2])
+//        : setLabelMode(modes[0])
   }
 
   const requestRecordPermission = async () => {
@@ -51,6 +57,7 @@ const SpeechProvider = ({ children }) => {
 
   const onStart = (e) => {
     console.log('Starting Listening')
+    listening = 1
     setIsListening(true)
   }
 
@@ -70,180 +77,260 @@ const SpeechProvider = ({ children }) => {
     setResults(results.value)
     const RNFS = require('react-native-fs')
     // path = RNFS.DocumentDirectoryPath + '/voicelog.md'
-
-    if (results.value[0] === 'clear session') {
-      RNFS.writeFile(path, sessionTitle, 'utf8')
-        .then((success) => {
-          console.log('Cleared session')
-          Tts.speak('Current session cleared.')
-        })
-        .catch((err) => {
-          console.log('PROBLEM HERE')
-          console.log(err.message)
-          Tts.speak('Error clearing session.')
-        })
-    } else if (results.value[0].startsWith('rename session')) {
-      const newName = results.value[0].slice(15).split(' ').join('_')
-      console.log('Renaming Session File Name')
-      RNFS.moveFile(path, RNFS.DocumentDirectoryPath + '/' + newName + '.md')
-      path = RNFS.DocumentDirectoryPath + '/' + newName + '.md'
-      Tts.speak('Current session renamed to ' + results.value[0].slice(15))
-    } else if (results.value[0].startsWith('rename title')) {
-      sessionTitle = '# ' + results.value[0].slice(13) + '\n'
-      console.log('Renaming Title')
-
-      RNFS.writeFile(path, sessionTitle, 'utf8')
-        .then((success) => {
-          console.log('Cleared session')
-          Tts.speak('Current session title renamed to ' + results.value[0].slice(13))
-        })
-        .catch((err) => {
-          console.log('PROBLEM HERE')
-          console.log(err.message)
-          Tts.speak('Error renaming session title.')
-        })
-      for (let i = 0; i < inputs.length; i++) {
-        RNFS.appendFile(path, '- ' + inputs[i] + '\n', 'utf8')
-          .then((success) => {
-            console.log('FILE WRITTEN: ' + path)
-            inputs.push(results.value[0])
-          })
-          .catch((err) => {
-            console.log('PROBLEM HERE')
-            console.log(err.message)
-          })
-      }
-    } else if (results.value[0].startsWith('select mode')) {
-      if (results.value[0].slice(12) === 'mindful') {
-        console.log('Mindful Mode Selected')
-        setLabelMode('Mindful')
-        Tts.speak('Mindful Mode Selected')
-      } else if (results.value[0].slice(12) === 'command') {
-        console.log('Command Mode Selected')
-        setLabelMode('Command')
-        Tts.speak('Command Mode Selected')
-      } else if (results.value[0].slice(12) === 'editing') {
-        console.log('Assisted Editing Mode Selected')
-        setLabelMode('Assisted Editing')
-        Tts.speak('Assisted Editing Mode Selected')
-      } else {
-        console.log('Incorrect Mode Specified')
-        Tts.speak('Incorrect Mode Specified')
-      }
-    } else if (results.value[0].startsWith('playback session')) {
-      ttsFilePlayback(results.value[0].slice(17))
-    } else if (results.value[0].startsWith('play back session')) {
-      ttsFilePlayback(results.value[0].slice(18))
-    } else if (results.value[0] === ('playback') || results.value[0] === ('play back')) {
-      ttsPlayback()
-    } else if (results.value[0].startsWith('write to Google Drive')) {
-      console.log('Writing to Google Drive')
-      Tts.speak('Writing to Google Drive')
-      RNFS.readFile(path, 'utf8').then((data) => {
-        writeToDrive(fileName, data)
-      })
-    } else {
-      /* if you want text to persist in the file between button presses, use
-         * appendFile() instead of writeFile(). You should also probably modify
-         * the second parameter to ' ' + e.value[0] so text strings don't run
-         * together between button presses. */
-      const parsedInputArray = removeStopwords(results.value[0].split(' '))
-      let parsedInput = parsedInputArray.toString()
-      parsedInput = parsedInput.replace(/,/g, ' ')
-      console.log(parsedInput)
-      let currIndex = 0
-      if (inputs.length === 0) {
-        tmp = [results.value[0]]
-        organizedInputs.push(tmp)
-
-        tmp = [parsedInput]
-        parsedOrganizedInputs.push(tmp)
-      } else {
-        let maxSim = 0.5
-        let indexToInsert = -1
-        // get the total for each string
-
-        for (let i = 0; i < organizedInputs.length; i++) {
-          let totalSim = 0
-          let avgSim = 0
-          for (let j = 0; j < organizedInputs[i].length; j++) {
-            const sim = cosineSimilarity(results.value[0], parsedOrganizedInputs[i][j])
-            totalSim += sim
-            // get index of new best
+    if (results.value[0].startsWith('select mode')) {
+          if (results.value[0].slice(12) === 'mindful') {
+            console.log('Mindful Mode Selected')
+            setLabelMode('Mindful')
+            mode ='Mindful'
+            Tts.speak('Mindful Mode Selected')
+          } else if (results.value[0].slice(12) === 'command') {
+            console.log('Command Mode Selected')
+            setLabelMode('Command')
+            mode = 'Command'
+            Tts.speak('Command Mode Selected')
+          } else if (results.value[0].slice(12) === 'editing') {
+            console.log('Assisted Editing Mode Selected')
+            setLabelMode('Assisted Editing')
+            mode ='Assisted Editing'
+            Tts.speak('Assisted Editing Mode Selected')
+          } else {
+            console.log('Incorrect Mode Specified')
+            Tts.speak('Incorrect Mode Specified')
           }
-          avgSim = totalSim / organizedInputs[i].length
-          console.log(avgSim)
-          if (avgSim > maxSim) {
-            maxSim = avgSim
-            indexToInsert = i
-          }
-          currIndex += 1
-        }
-        if (indexToInsert === -1) {
-          tmp = [results.value[0]]
-          organizedInputs.push(tmp)
-          tmp = [parsedInput]
-          parsedOrganizedInputs.push(tmp)
-        } else {
-          organizedInputs[indexToInsert].push(results.value[0])
-          parsedOrganizedInputs[indexToInsert].push(parsedInput)
-        }
-      }
-      //      inputs.push(results.value[0])
-      //      if (inputs.length === 1) {
-      //        RNFS.writeFile(path, sessionTitle, 'utf8')
-      //          .then((success) => {
-      //            console.log('Cleared session')
-      //          })
-      //          .catch((err) => {
-      //            console.log('PROBLEM HERE')
-      //            console.log(err.message)
-      //          })
-      //
-      //
-      //      }
-      RNFS.writeFile(path, sessionTitle, 'utf8')
-        .then((success) => {
-          console.log('Cleared session')
-        })
-        .catch((err) => {
-          console.log('PROBLEM HERE')
-          console.log(err.message)
-        })
-      //      RNFS.appendFile(path, '- ' + results.value[0] + '\n', 'utf8')
-      //        .then((success) => {
-      //          console.log('FILE WRITTEN: ' + path)
-      //          inputs.push(results.value[0])
-      //        })
-      //        .catch((err) => {
-      //          console.log('PROBLEM HERE')
-      //          console.log(err.message)
-      //        })
-      inputs.push(results.value[0])
-      currIndex = 0
-      for (let i = 0; i < organizedInputs.length; i++) {
-        RNFS.appendFile(path, '- Grouping ' + currIndex + '\n', 'utf8')
-          .then((success) => {
-            console.log('FILE WRITTEN: ' + path)
-          })
-          .catch((err) => {
-            console.log('PROBLEM HERE')
-            console.log(err.message)
-          })
+    }
+    else if(mode === "Mindful"){
+        console.log('Mindful Mode: ')
 
-        for (let j = 0; j < organizedInputs[i].length; j++) {
-          RNFS.appendFile(path, '  - ' + organizedInputs[i][j] + '\n', 'utf8')
+        if (results.value[0] === 'clear session') {
+          RNFS.writeFile(path, sessionTitle, 'utf8')
             .then((success) => {
-              console.log('FILE WRITTEN: ' + path)
+              console.log('Cleared session')
+              Tts.speak('Current session cleared.')
+            })
+            .catch((err) => {
+              console.log('PROBLEM HERE')
+              console.log(err.message)
+              Tts.speak('Error clearing session.')
+            })
+        } else if (results.value[0].startsWith('rename session')) {
+          const newName = results.value[0].slice(15).split(' ').join('_')
+          console.log('Renaming Session File Name')
+          RNFS.moveFile(path, RNFS.DocumentDirectoryPath + '/' + newName + '.md')
+          path = RNFS.DocumentDirectoryPath + '/' + newName + '.md'
+          Tts.speak('Current session renamed to ' + results.value[0].slice(15))
+        } else if (results.value[0].startsWith('rename title')) {
+          sessionTitle = '# ' + results.value[0].slice(13) + '\n'
+          console.log('Renaming Title')
+
+          RNFS.writeFile(path, sessionTitle, 'utf8')
+            .then((success) => {
+              console.log('Cleared session')
+              Tts.speak('Current session title renamed to ' + results.value[0].slice(13))
+            })
+            .catch((err) => {
+              console.log('PROBLEM HERE')
+              console.log(err.message)
+              Tts.speak('Error renaming session title.')
+            })
+          for (let i = 0; i < inputs.length; i++) {
+            RNFS.appendFile(path, '- ' + inputs[i] + '\n', 'utf8')
+              .then((success) => {
+                console.log('FILE WRITTEN: ' + path)
+                inputs.push(results.value[0])
+              })
+              .catch((err) => {
+                console.log('PROBLEM HERE')
+                console.log(err.message)
+              })
+          }
+        } else if (results.value[0].startsWith('select mode')) {
+          if (results.value[0].slice(12) === 'mindful') {
+            console.log('Mindful Mode Selected')
+            setLabelMode('Mindful')
+            labelMode('Mindful')
+            Tts.speak('Mindful Mode Selected')
+          } else if (results.value[0].slice(12) === 'command') {
+            console.log('Command Mode Selected')
+            setLabelMode('Command')
+            labelMode('Command')
+            Tts.speak('Command Mode Selected')
+          } else if (results.value[0].slice(12) === 'editing') {
+            console.log('Assisted Editing Mode Selected')
+            setLabelMode('Assisted Editing')
+            labelMode('Assisted Editing')
+            Tts.speak('Assisted Editing Mode Selected')
+          } else {
+            console.log('Incorrect Mode Specified')
+            Tts.speak('Incorrect Mode Specified')
+          }
+        } else if (results.value[0].startsWith('playback session')) {
+          ttsFilePlayback(results.value[0].slice(17))
+        } else if (results.value[0].startsWith('play back session')) {
+          ttsFilePlayback(results.value[0].slice(18))
+        } else if (results.value[0] === ('playback') || results.value[0] === ('play back')) {
+          ttsPlayback()
+        } else if (results.value[0].startsWith('write to Google Drive')) {
+          console.log('Writing to Google Drive')
+          Tts.speak('Writing to Google Drive')
+          RNFS.readFile(path, 'utf8').then((data) => {
+            writeToDrive(fileName, data)
+          })
+        } else {
+          /* if you want text to persist in the file between button presses, use
+             * appendFile() instead of writeFile(). You should also probably modify
+             * the second parameter to ' ' + e.value[0] so text strings don't run
+             * together between button presses. */
+          const parsedInputArray = removeStopwords(results.value[0].split(' '))
+          let parsedInput = parsedInputArray.toString()
+          parsedInput = parsedInput.replace(/,/g, ' ')
+          console.log(parsedInput)
+          let currIndex = 0
+          if (inputs.length === 0) {
+            tmp = [results.value[0]]
+            organizedInputs.push(tmp)
+
+            tmp = [parsedInput]
+            parsedOrganizedInputs.push(tmp)
+          } else {
+                let maxSim = 0.5
+                let indexToInsert = -1
+                // get the total for each string
+
+                for (let i = 0; i < organizedInputs.length; i++) {
+                  let totalSim = 0
+                  let avgSim = 0
+                  for (let j = 0; j < organizedInputs[i].length; j++) {
+                    const sim = cosineSimilarity(results.value[0], parsedOrganizedInputs[i][j])
+                    totalSim += sim
+                    // get index of new best
+                  }
+                  avgSim = totalSim / organizedInputs[i].length
+                  console.log(avgSim)
+                  if (avgSim > maxSim) {
+                    maxSim = avgSim
+                    indexToInsert = i
+                  }
+                  currIndex += 1
+                }
+                if (indexToInsert === -1) {
+                  tmp = [results.value[0]]
+                  organizedInputs.push(tmp)
+                  tmp = [parsedInput]
+                  parsedOrganizedInputs.push(tmp)
+                } else {
+                  organizedInputs[indexToInsert].push(results.value[0])
+                  parsedOrganizedInputs[indexToInsert].push(parsedInput)
+                }
+          }
+
+
+
+          RNFS.writeFile(path, sessionTitle, 'utf8')
+            .then((success) => {
+              console.log('Cleared session')
             })
             .catch((err) => {
               console.log('PROBLEM HERE')
               console.log(err.message)
             })
+
+          inputs.push(results.value[0])
+          currIndex = 0
+          for (let i = 0; i < organizedInputs.length; i++) {
+            RNFS.appendFile(path, '- Grouping ' + currIndex + '\n', 'utf8')
+              .then((success) => {
+                console.log('FILE WRITTEN: ' + path)
+              })
+              .catch((err) => {
+                console.log('PROBLEM HERE')
+                console.log(err.message)
+              })
+
+            for (let j = 0; j < organizedInputs[i].length; j++) {
+              RNFS.appendFile(path, '  - ' + organizedInputs[i][j] + '\n', 'utf8')
+                .then((success) => {
+                  console.log('FILE WRITTEN: ' + path)
+                })
+                .catch((err) => {
+                  console.log('PROBLEM HERE')
+                  console.log(err.message)
+                })
+            }
+            currIndex += 1
+          }
+
         }
-        currIndex += 1
-      }
     }
+    else if(mode === "Command"){
+        console.log('Command Mode: ')
+        //rename first element of array (# title)
+        if (results.value[0].startsWith('rename title'))
+        {
+          console.log('renaming document title')
+          command_document[0] = "# "+ results.value[0].slice(13)
+        }
+        else if (results.value[0] == "undo last command")
+        {
+          console.log('undo last command')
+          if(command_document.length > 1){
+            command_document.pop()
+          }
+        }
+        //add a section title (## section title)
+        else if (results.value[0].startsWith('insert section title'))
+        {
+          console.log('Appending section title to document')
+          command_document.push("## " + results.value[0].slice(20))
+        }
+        //add a subsection title(### subsection title)
+        else if (results.value[0].startsWith('insert subsection title'))
+        {
+          console.log('appending subsection to document')
+          command_document.push("### " +results.value[0].slice(23))
+        }
+        // add a bullet to document (- bullet content)
+        else if (results.value[0].startsWith('insert bullet'))
+        {
+          console.log('Appending bullet to document')
+          command_document.push("- " + results.value[0].slice(13))
+        }
+        // add simple text
+        else
+        {
+          console.log('appending text to document')
+          command_document.push(results.value[0])
+        }
+
+
+        //rewrite file
+
+        RNFS.writeFile(document_path, "", 'utf8')
+          .then((success) => {
+            console.log('Cleared session')
+          })
+          .catch((err) => {
+            console.log('PROBLEM HERE')
+            console.log(err.message)
+          })
+
+
+        for (let i = 0; i < command_document.length; i++) {
+          RNFS.appendFile(document_path, command_document[i] + '\n', 'utf8')
+            .then((success) => {
+              console.log('FILE WRITTEN: ' + document_path)
+            })
+              .catch((err) => {
+              console.log('PROBLEM HERE')
+              console.log(err.message)
+            })
+        }
+    }
+    else if(mode === "Assisted Editing")
+    {
+        Tts.speak("No assisted editing commands at this moment ")
+        console.log('Editing Mode: ')
+    }
+
     console.log('in onResults')
     stopRecognizing()
   }
