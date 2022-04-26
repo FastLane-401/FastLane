@@ -26,8 +26,6 @@ const GDriveProvider = ({ children }) => {
     async function init () {
       await initializeGDrive()
     }
-    console.log('GDriveProvider: useEffect called. DirID: ', dirId)
-
     if (!loading) {
       init()
     }
@@ -103,9 +101,6 @@ const GDriveProvider = ({ children }) => {
   const writeToDrive = async (name, data) => {
     /* checks if file exists - creates if not */
     console.log('Writing to drive')
-    console.log('Access Token: ', gdrive.accessToken)
-    console.log({ data })
-    console.log({ dirId })
     const dir = await getDirId()
     try {
       const id = (await gdrive.files.createIfNotExists({
@@ -135,18 +130,17 @@ const GDriveProvider = ({ children }) => {
 
   const listDriveFiles = async () => {
     console.log('Listing files')
-    console.log('Access Token: ', gdrive.accessToken)
-    console.log({ dirId })
-    console.log(await gdrive.files.list(dirId))
-
-    console.log(' ')
-    console.log({ dirId })
     const dir = await getDirId()
-    const folder = await gdrive.files.list({
-      q: new ListQueryBuilder()
-        .in(dir, 'parents')
-    })
-    setFiles(folder.files)
+
+    try {
+      const folder = await gdrive.files.list({
+        q: new ListQueryBuilder()
+          .in(dir, 'parents')
+      })
+      setFiles(folder.files)
+    } catch (e) {
+      console.error('ERROR IN LISTDRIVEFILES: ', e)
+    }
   }
 
   return (

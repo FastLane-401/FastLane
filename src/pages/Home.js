@@ -6,7 +6,8 @@ import {
   Image,
   Modal,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  TextInput
 } from 'react-native'
 import { AuthContext } from '../contexts/AuthContext'
 import { SpeechContext } from '../contexts/SpeechContext'
@@ -16,9 +17,10 @@ const Home = () => {
   const { user, SignIn, SignOut, getToken } = useContext(AuthContext)
   const { micPressed, results, labelMode, modeTextHandler, filename, changeFilename } = useContext(SpeechContext)
   const { files, listDriveFiles } = useContext(GDriveContext)
-  console.log({ files })
 
   const [modalVisible, setModalVisible] = useState(false)
+  const [modalText, setModalText] = useState(false)
+  const [text, setText] = useState('')
 
   const Item = ({ title, onPress }) => (
 
@@ -35,9 +37,14 @@ const Home = () => {
   const renderItem = ({ item }) => (
     <Item
         title={item.name}
-        onPress={() => changeFilename(item.name)}
+        onPress={() => handlePress(item.name)}
     />
   )
+
+  const handlePress = (filename) => {
+    changeFilename(filename)
+    setModalVisible(false)
+  }
 
   return (
       <View
@@ -69,7 +76,7 @@ const Home = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => setModalVisible(false)}
+                        onPress={() => { setModalVisible(false); setModalText(true) }}
                         style={styles.docListNewButton} >
 
                         <Text style={styles.docListNewTest}>+</Text>
@@ -86,6 +93,35 @@ const Home = () => {
 
               </View>
 
+        </Modal>
+      </View>
+
+      {/* New Document Popup */}
+      <View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalText}
+          onRequestClose={() => {
+            setModalText(!modalText)
+          }}
+        >
+          <View style={styles.screen}>
+            <TextInput
+              autoFocus={true}
+              placeholder='Enter Document Name'
+              onChangeText={(newText) => setText(newText)}
+              value={text}
+              // eslint-disable-next-line no-unused-expressions
+              onSubmitEditing={() => { (changeFilename(text), setModalText(false), setText('')) }}
+            />
+            <TouchableOpacity
+              onPress={() => { setModalText(false) }}
+              style={styles.docListNewButton} >
+
+              <Text style={styles.docListNewTest}>X</Text>
+            </TouchableOpacity>
+          </View>
         </Modal>
       </View>
 
