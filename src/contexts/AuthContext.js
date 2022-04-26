@@ -9,29 +9,28 @@ import React, {
 
 const AuthContext = createContext()
 GoogleSignin.configure({
+  scopes: [
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/drive.appdata'
+  ],
   webClientId: '1029380188507-3hq5hda1p1n25sumkpuakjskv76sc067.apps.googleusercontent.com'
 })
 
 const AuthProvider = ({ children }) => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [user, setUser] = useState()
 
   useEffect(() => {
-    auth().onAuthStateChanged(setUser)
-  })
-
-  const authenticated = !!user
+    console.log('Effect called')
+    getUserInfo()
+  }, [])
 
   const SignIn = async () => {
+    console.log('Signing in')
     try {
-      const { idToken } = await GoogleSignin.signIn()
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken)
-      const credentials = await auth().signInWithCredential(googleCredential)
-
-      if (!credentials) return
-
       setLoading(true)
-      setUser(credentials)
+      const userInfo = await GoogleSignin.signIn()
+      setUser(userInfo.user)
     } catch (e) {
       console.error(e)
     } finally {
@@ -40,12 +39,28 @@ const AuthProvider = ({ children }) => {
   }
 
   const SignOut = async () => {
+    console.log('Signing out')
     try {
+      setLoading(true)
       await GoogleSignin.signOut()
       setUser(null)
-      auth().signOut()
     } catch (e) {
       console.error(e)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getUserInfo = async () => {
+    console.log('Getting user info')
+    try {
+      setLoading(true)
+      const userInfo = await GoogleSignin.signInSilently()
+      setUser(userInfo.user)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -53,7 +68,6 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{
       user,
       loading,
-      authenticated,
       SignIn,
       SignOut
     }}

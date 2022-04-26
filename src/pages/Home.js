@@ -1,21 +1,129 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   StyleSheet,
   Text,
   View,
   Image,
-  TouchableOpacity
+  Modal,
+  FlatList,
+  TouchableOpacity,
+  TextInput
 } from 'react-native'
 import { AuthContext } from '../contexts/AuthContext'
 import { SpeechContext } from '../contexts/SpeechContext'
+import { GDriveContext } from '../contexts/GDriveContext'
 
 const Home = () => {
-  const { user, SignIn, SignOut } = useContext(AuthContext)
-  const { micPressed, results, labelMode, setCountDoc, countDoc, modeTextHandler } = useContext(SpeechContext)
-  console.log({ user })
+  const { user, SignIn, SignOut, getToken } = useContext(AuthContext)
+  const { micPressed, results, labelMode, modeTextHandler, filename, changeFilename } = useContext(SpeechContext)
+  const { files, listDriveFiles } = useContext(GDriveContext)
+
+  const [modalVisible, setModalVisible] = useState(false)
+  const [modalText, setModalText] = useState(false)
+  const [text, setText] = useState('')
+
+  const Item = ({ title, onPress }) => (
+
+  <View style={styles.docListButtonsView}>
+  <TouchableOpacity
+    style={styles.docListButtons}
+    onPress={onPress}
+    >
+    <Text style={styles.docListButtonsText} numberOfLines={1}>{title}</Text>
+  </TouchableOpacity>
+  </View>
+  )
+
+  const renderItem = ({ item }) => (
+    <Item
+        title={item.name}
+        onPress={() => handlePress(item.name)}
+    />
+  )
+
+  const handlePress = (filename) => {
+    changeFilename(filename)
+    setModalVisible(false)
+  }
+
   return (
       <View
         style={styles.screen}>
+
+      {/* Document List Popup */}
+      <View>
+        <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                  setModalVisible(!modalVisible)
+                }}
+              >
+              <View style={styles.screen} >
+
+                    <View paddingBottom={15}/>
+
+                    <View height={60}>
+                    <TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        style={styles.docListFileButton} >
+
+                        <Image
+                            style={styles.docImage}
+                            source={require('../../img/folder-open-solid.png')}
+                        />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => { setModalVisible(false); setModalText(true) }}
+                        style={styles.docListNewButton} >
+
+                        <Text style={styles.docListNewTest}>+</Text>
+                    </TouchableOpacity>
+                    </View>
+
+                    <View paddingBottom={15}/>
+
+                    <FlatList
+                            data={files}
+                            keyExtractor={item => item.id}
+                            renderItem={renderItem}
+                          />
+
+              </View>
+
+        </Modal>
+      </View>
+
+      {/* New Document Popup */}
+      <View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalText}
+          onRequestClose={() => {
+            setModalText(!modalText)
+          }}
+        >
+          <View style={styles.screen}>
+            <TextInput
+              autoFocus={true}
+              placeholder='Enter Document Name'
+              onChangeText={(newText) => setText(newText)}
+              value={text}
+              // eslint-disable-next-line no-unused-expressions
+              onSubmitEditing={() => { (changeFilename(text), setModalText(false), setText('')) }}
+            />
+            <TouchableOpacity
+              onPress={() => { setModalText(false) }}
+              style={styles.docListNewButton} >
+
+              <Text style={styles.docListNewTest}>X</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </View>
 
       {/* Setting and Account Information Bar */}
       <View
@@ -32,7 +140,7 @@ const Home = () => {
                     onPress={SignOut}>
                     <Text
                         styles={styles.textWhite}>
-                            {user.displayName}
+                            {user.givenName}
                     </Text>
                   </TouchableOpacity>
               : <TouchableOpacity
@@ -44,12 +152,14 @@ const Home = () => {
                     </Text>
                   </TouchableOpacity>
         }
+
       </View>
+
         {/* Document name Display */}
         <View style={styles.docDisplay} >
             <Text
                 style={styles.docTitle}>
-                    Document{'\n'}
+                    {filename}{'\n'}
             </Text>
             <View style={styles.docLine}></View>
             <Text
@@ -84,7 +194,8 @@ const Home = () => {
 
         {/* Document Button */}
         <TouchableOpacity
-          onPress={() => setCountDoc(countDoc + 1)}
+          onPress={() => { listDriveFiles(); setModalVisible(true) }}
+
           style={styles.docButton} >
 
           <Image
@@ -330,6 +441,63 @@ const styles = StyleSheet.create({
 
   boldText: {
     fontWeight: 'bold'
+  },
+
+  docListButtonsView: {
+    backgroundColor: '#2F2F2F',
+    paddingTop: 2,
+    paddingBottom: 2
+  },
+
+  docListButtons: {
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    borderRadius: 20,
+    width: 300,
+    fontSize: 10,
+    paddingTop: 10,
+    paddingBottom: 10
+  },
+
+  docListButtonsText: {
+    color: '#FFFCF7',
+    fontSize: 20,
+    fontWeight: 'bold',
+    paddingLeft: 10,
+    paddingRight: 10
+  },
+
+  docListFileButton: {
+    left: -125,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 100,
+    backgroundColor: '#ad6f05'
+  },
+
+  docListNewButton: {
+    left: 125,
+    top: -60,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
+    borderRadius: 100,
+    backgroundColor: '#ad6f05'
+  },
+
+  docListNewTest: {
+  top: -5,
+  justifyContent: 'center',
+  alignItems: 'center',
+  color: '#E0E2DB',
+  fontSize: 50,
+  textTransform: 'capitalize',
+  fontWeight: 'bold'
   }
 
 })
