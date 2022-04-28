@@ -79,7 +79,7 @@ const Home = () => {
                         onPress={() => { setModalVisible(false); setModalText(true) }}
                         style={styles.docListNewButton} >
 
-                        <Text style={styles.docListNewTest}>+</Text>
+                        <Text style={styles.docListNewText}>+</Text>
                     </TouchableOpacity>
                     </View>
 
@@ -99,7 +99,6 @@ const Home = () => {
       {/* New Document Popup */}
       <View>
         <Modal
-          animationType="slide"
           transparent={true}
           visible={modalText}
           onRequestClose={() => {
@@ -107,7 +106,9 @@ const Home = () => {
           }}
         >
           <View style={styles.screen}>
+            <View style={styles.docListNewBorder}>
             <TextInput
+              style={styles.docListNewInput}
               autoFocus={true}
               placeholder='Enter Document Name'
               onChangeText={(newText) => setText(newText)}
@@ -115,12 +116,17 @@ const Home = () => {
               // eslint-disable-next-line no-unused-expressions
               onSubmitEditing={() => { (changeFilename(text), setModalText(false), setText('')) }}
             />
+            </View>
+
             <TouchableOpacity
               onPress={() => { setModalText(false) }}
-              style={styles.docListNewButton} >
+              style={styles.docListNewButtonExit} >
 
-              <Text style={styles.docListNewTest}>X</Text>
+              <Text style={styles.docListNewExit}>X</Text>
             </TouchableOpacity>
+
+
+
           </View>
         </Modal>
       </View>
@@ -490,7 +496,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#ad6f05'
   },
 
-  docListNewTest: {
+  docListNewText: {
+    top: -5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: '#E0E2DB',
+    fontSize: 50,
+    textTransform: 'capitalize',
+    fontWeight: 'bold'
+  },
+
+
+  docListNewButtonExit: {
+    left: 0,
+    top: -50,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
+    borderRadius: 100,
+    backgroundColor: '#ad6f05'
+  },
+
+  docListNewExit: {
   top: -5,
   justifyContent: 'center',
   alignItems: 'center',
@@ -498,6 +527,29 @@ const styles = StyleSheet.create({
   fontSize: 50,
   textTransform: 'capitalize',
   fontWeight: 'bold'
+  },
+
+  docListNewInput: {
+  top: 0,
+  justifyContent: 'center',
+  alignItems: 'center',
+  color: '#E0E2DB',
+  fontSize: 20,
+  textTransform: 'capitalize',
+  fontWeight: 'bold'
+  },
+
+  docListNewBorder: {
+    backgroundColor: '#171717',
+    color: '#FFFCF7',
+    top: -100,
+    borderRadius: 20,
+    width: 300,
+    fontSize: 10,
+    paddingTop: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10
   }
 
 })
